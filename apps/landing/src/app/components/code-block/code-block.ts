@@ -12,6 +12,14 @@ import {
 @Component({
   selector: 'app-code-block',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  // `min-width: 0` lets the inner <pre> scroll instead of stretching grid/flex
+  // tracks past the viewport on narrow screens.
+  styles: `
+    :host {
+      display: block;
+      min-width: 0;
+    }
+  `,
   template: `
     <figure
       class="group relative overflow-hidden rounded-xl border border-night-line bg-night text-[0.85rem] shadow-[0_18px_40px_-24px_rgba(0,0,0,0.7)]"

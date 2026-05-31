@@ -96,8 +96,8 @@
   font-family: var(--font-mono);
   font-size: 0.6rem;
   white-space: nowrap;
-  color: var(--color-night);
-  background: var(--color-amber-bright);
+  color: #ffffff;
+  background: #2563eb;
   padding: 0.15rem 0.45rem;
   border-radius: 5px;
   opacity: 0;
@@ -134,89 +134,105 @@
   border: 1px solid var(--color-line);
 }
 
+/* Editor popover — mirrors the real li18n-inspector-editor:
+ * a light panel with the same slate / blue palette and Cancel·Save controls. */
 .editor {
   position: absolute;
   right: -1.2rem;
   bottom: -1.6rem;
-  width: 16.5rem;
-  max-width: 78%;
-  padding: 0.85rem 0.9rem 0.8rem;
-  border-radius: 13px;
-  background: var(--color-night);
-  border: 1px solid var(--color-night-line);
-  box-shadow: 0 26px 50px -22px rgba(0, 0, 0, 0.65);
+  width: 17rem;
+  max-width: 80%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  box-shadow: 0 22px 46px -18px rgba(15, 23, 42, 0.4);
+  color: #0f172a;
+  font-size: 13px;
   transform-origin: bottom right;
 }
 
 .editor__head {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.5rem;
-  margin-bottom: 0.6rem;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.editor__label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #64748b;
 }
 
 .editor__key {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
-  font-weight: 500;
-  color: var(--color-amber-bright);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  font-size: 12px;
+  color: #2563eb;
+  word-break: break-all;
 }
 
-.editor__lang {
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-  color: rgba(247, 242, 232, 0.4);
-  flex-shrink: 0;
-}
-
-.editor__field {
+.editor__input {
   display: flex;
   align-items: center;
-  min-height: 2.2rem;
-  padding: 0.45rem 0.6rem;
-  border-radius: 8px;
-  background: var(--color-night-soft);
-  border: 1px solid var(--color-night-line);
-  box-shadow: 0 0 0 2px color-mix(in oklab, var(--color-amber) 28%, transparent);
+  min-height: 2.4rem;
+  padding: 8px;
+  border-radius: 6px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  /* simulates the blue :focus ring of the real textarea */
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.4);
 }
 
-.editor__caret-text {
-  font-size: 0.86rem;
-  color: var(--color-paper);
+.editor__text {
+  font-size: 13px;
+  color: #0f172a;
 }
 
 .editor__caret {
   width: 2px;
   height: 1.05rem;
   margin-left: 1px;
-  background: var(--color-amber-bright);
+  background: #2563eb;
   display: inline-block;
 }
 
-.editor__foot {
+.editor__actions {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 0.65rem;
+  justify-content: flex-end;
+  gap: 8px;
 }
 
-.editor__hint {
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-  color: rgba(247, 242, 232, 0.4);
+.editor__btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  font-size: 12px;
+  font-weight: 500;
+  color: #0f172a;
 }
 
-.editor__save {
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: var(--color-night);
-  background: var(--color-amber-bright);
-  padding: 0.3rem 0.85rem;
-  border-radius: 7px;
+.editor__btn--primary {
+  border-color: #2563eb;
+  background: #2563eb;
+  color: #ffffff;
+}
+
+/* On narrow screens anchor the popover inside the demo so the section's
+ * overflow-hidden never clips the Save button at the viewport edge. */
+@media (max-width: 640px) {
+  .editor {
+    right: 0.6rem;
+    left: auto;
+    bottom: -1rem;
+    width: 15rem;
+    max-width: calc(100% - 1.2rem);
+  }
 }
 
 /* motion — keyframes live in global styles.css (global identifiers) */

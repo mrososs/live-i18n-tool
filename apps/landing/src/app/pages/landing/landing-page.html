@@ -10,13 +10,14 @@
     </a>
 
     <nav class="hidden items-center gap-8 md:flex" aria-label="Primary">
+      <a class="nav-link" href="#watch">Demo</a>
       <a class="nav-link" href="#how">How it works</a>
       <a class="nav-link" href="#features">Features</a>
       <a class="nav-link" href="#architecture">Architecture</a>
       <a class="nav-link" href="#get-started">Get started</a>
     </nav>
 
-    <div class="flex items-center gap-3">
+    <div class="flex items-center gap-2 sm:gap-3">
       <a
         class="hidden text-sm font-medium text-ink-soft transition hover:text-ochre sm:inline"
         href="https://github.com/mrososs/live-i18n-tool"
@@ -29,8 +30,64 @@
         href="#get-started"
         >Install</a
       >
+
+      <button
+        type="button"
+        class="burger inline-flex items-center justify-center md:hidden"
+        (click)="toggleMenu()"
+        [attr.aria-expanded]="menuOpen()"
+        aria-controls="mobile-nav"
+        aria-label="Toggle navigation menu"
+      >
+        <span class="burger__box" [class.is-open]="menuOpen()">
+          <span class="burger__line"></span>
+          <span class="burger__line"></span>
+          <span class="burger__line"></span>
+        </span>
+      </button>
     </div>
   </div>
+
+  <!-- mobile drawer (< md only) -->
+  @if (menuOpen()) {
+  <nav
+    id="mobile-nav"
+    class="mobile-nav flex flex-col md:hidden"
+    aria-label="Mobile"
+  >
+    <a class="mobile-link" href="#watch" (click)="closeMenu()">Demo</a>
+    <a class="mobile-link" href="#how" (click)="closeMenu()">How it works</a>
+    <a class="mobile-link" href="#features" (click)="closeMenu()">Features</a>
+    <a class="mobile-link" href="#architecture" (click)="closeMenu()"
+      >Architecture</a
+    >
+    <a class="mobile-link" href="#get-started" (click)="closeMenu()"
+      >Get started</a
+    >
+    <a
+      class="mobile-link mobile-link--ext"
+      href="https://github.com/mrososs/live-i18n-tool"
+      rel="noopener"
+      target="_blank"
+      (click)="closeMenu()"
+    >
+      GitHub
+      <svg
+        width="15"
+        height="15"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M7 17 17 7M9 7h8v8" />
+      </svg>
+    </a>
+  </nav>
+  }
 </header>
 
 <main id="top">
@@ -46,28 +103,29 @@
           class="rise inline-flex items-center gap-2 rounded-full border border-line bg-paper-card px-3.5 py-1.5 text-xs font-semibold tracking-wide text-ink-soft"
         >
           <span class="size-1.5 rounded-full bg-amber"></span>
-          IN-CONTEXT I18N EDITOR FOR ANGULAR
+          <span>{{ 'hero.badge' | translate }}</span>
         </span>
 
         <h1
           class="rise font-display mt-6 text-[clamp(2.6rem,6vw,4.7rem)] font-semibold leading-[0.98] tracking-[-0.02em] text-ink"
           style="animation-delay: 80ms"
         >
-          Stop hunting for keys.
+          <span>{{ 'hero.title.lead' | translate }}</span>&ngsp;
           <span class="relative whitespace-nowrap">
-            <span class="italic text-ochre">Edit live</span>
-          </span>
-          where the text renders.
+            <span class="italic text-ochre"
+              >{{ 'hero.title.accent' | translate }}</span
+            > </span
+          >&ngsp;
+          <span>{{ 'hero.title.trail' | translate }}</span>
         </h1>
 
         <p
           class="rise mt-7 max-w-xl text-lg leading-relaxed text-ink-soft"
           style="animation-delay: 160ms"
         >
-          Hover any translated string in your running app, click, and rewrite
-          it. The matching key in your <code class="kbd">*.json</code> is saved
-          to disk — indentation preserved. Zero config, local-first, and
-          completely inert in production.
+          <span>{{ 'hero.lead.a' | translate }}</span>&ngsp;
+          <code class="kbd">*.json</code>&ngsp;
+          <span>{{ 'hero.lead.b' | translate }}</span>
         </p>
 
         <div
@@ -78,7 +136,7 @@
             href="#get-started"
             class="inline-flex items-center gap-2 rounded-full bg-amber px-6 py-3 text-base font-semibold text-night shadow-[0_12px_28px_-10px_rgba(224,138,43,0.7)] transition hover:bg-amber-bright"
           >
-            Get started
+            <span>{{ 'hero.ctaPrimary' | translate }}</span>
             <svg
               width="18"
               height="18"
@@ -97,7 +155,7 @@
             href="#how"
             class="inline-flex items-center rounded-full border border-line bg-paper-card px-6 py-3 text-base font-semibold text-ink transition hover:border-ink/40"
           >
-            See how it works
+            {{ 'hero.ctaSecondary' | translate }}
           </a>
         </div>
 
@@ -129,31 +187,75 @@
     </div>
   </section>
 
+  <!-- ============================ WATCH ============================ -->
+  <section id="watch" class="wrap scroll-mt-20 py-24 lg:py-32">
+    <div class="max-w-2xl">
+      <p class="eyebrow">{{ 'video.eyebrow' | translate }}</p>
+      <h2 class="section-h mt-3">{{ 'video.title' | translate }}</h2>
+      <p class="mt-5 text-lg text-ink-soft">{{ 'video.intro' | translate }}</p>
+    </div>
+
+    <figure class="video-card mt-12 lg:mt-14">
+      <figcaption class="video-card__bar">
+        <span class="video-card__dots"><i></i><i></i><i></i></span>
+        <span class="video-card__url">
+          <svg
+            width="11"
+            height="11"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.4"
+            aria-hidden="true"
+          >
+            <rect x="4" y="11" width="16" height="10" rx="2" />
+            <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+          </svg>
+          localhost:4200
+        </span>
+        <span class="video-card__live">● LIVE</span>
+      </figcaption>
+
+      <video
+        class="video-card__media"
+        controls
+        playsinline
+        preload="metadata"
+        aria-label="Screen recording of the Live i18n editor: hovering a translated string, editing it, and saving the change to the locale JSON file on disk."
+      >
+        <source src="assets/video/live-i18n.mp4" type="video/mp4" />
+        Your browser can’t play embedded video —
+        <a class="underline" href="assets/video/live-i18n.mp4">
+          download the demo
+        </a>
+        instead.
+      </video>
+    </figure>
+  </section>
+
   <!-- ========================= HOW IT WORKS ========================= -->
   <section id="how" class="wrap scroll-mt-20 py-24 lg:py-32">
     <div class="max-w-2xl">
-      <p class="eyebrow">The loop</p>
-      <h2 class="section-h mt-3">
-        Four moves, from hover to disk.
-      </h2>
-      <p class="mt-5 text-lg text-ink-soft">
-        No round-trips through your editor, no key spelunking. The client and
-        the dev-server plugin cooperate so an edit in the browser lands in the
-        right file.
-      </p>
+      <p class="eyebrow">{{ 'how.eyebrow' | translate }}</p>
+      <h2 class="section-h mt-3">{{ 'how.title' | translate }}</h2>
+      <p class="mt-5 text-lg text-ink-soft">{{ 'how.intro' | translate }}</p>
     </div>
 
-    <ol class="mt-14 grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
+    <ol
+      class="mt-14 grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-4"
+    >
       @for (step of flow; track step.n) {
-        <li class="bg-paper-card p-7">
-          <span class="font-mono text-sm font-medium text-ochre">{{ step.n }}</span>
-          <h3 class="font-display mt-3 text-2xl font-semibold text-ink">
-            {{ step.title }}
-          </h3>
-          <p class="mt-2.5 text-[0.95rem] leading-relaxed text-ink-soft">
-            {{ step.body }}
-          </p>
-        </li>
+      <li class="bg-paper-card p-7">
+        <span class="font-mono text-sm font-medium text-ochre"
+          >{{ step.n }}</span
+        >
+        <h3 class="font-display mt-3 text-2xl font-semibold text-ink">
+          {{ step.title }}
+        </h3>
+        <p class="mt-2.5 text-[0.95rem] leading-relaxed text-ink-soft">
+          {{ step.body }}
+        </p>
+      </li>
       }
     </ol>
 
@@ -161,7 +263,9 @@
     <div
       class="mt-8 flex flex-col items-stretch gap-3 rounded-2xl border border-night-line bg-night p-5 font-mono text-sm text-paper/80 sm:flex-row sm:items-center sm:justify-between"
     >
-      <span class="text-paper/55">browser <span class="text-amber-bright">›</span> dev server</span>
+      <span class="text-paper/55"
+        >browser <span class="text-amber-bright">›</span> dev server</span
+      >
       <code class="text-amber-bright"
         >POST /__live-i18n-update
         <span class="text-paper/55">&#123; key, value, lang &#125;</span></code
@@ -175,19 +279,16 @@
     <div class="wrap py-24 lg:py-32">
       <div class="grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
         <div class="lg:sticky lg:top-28 lg:self-start">
-          <p class="eyebrow">Why it feels effortless</p>
-          <h2 class="section-h mt-3">
-            Built to disappear into your dev loop.
-          </h2>
+          <p class="eyebrow">{{ 'features.eyebrow' | translate }}</p>
+          <h2 class="section-h mt-3">{{ 'features.title' | translate }}</h2>
           <p class="mt-5 text-lg text-ink-soft">
-            The hard parts — finding the right key, writing the right file,
-            never breaking your build — are handled. You just edit text.
+            {{ 'features.intro' | translate }}
           </p>
 
-          <div
-            class="mt-8 rounded-2xl border border-line bg-paper-card p-6"
-          >
-            <p class="font-display text-2xl font-semibold leading-snug text-ink">
+          <div class="mt-8 rounded-2xl border border-line bg-paper-card p-6">
+            <p
+              class="font-display text-2xl font-semibold leading-snug text-ink"
+            >
               Zero template annotations.
             </p>
             <p class="mt-3 text-[0.95rem] leading-relaxed text-ink-soft">
@@ -198,31 +299,33 @@
           </div>
         </div>
 
-        <ul class="grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2">
+        <ul
+          class="grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2"
+        >
           @for (feature of features; track feature.title) {
-            <li class="bg-paper-card p-7">
-              <span
-                class="flex size-9 items-center justify-center rounded-lg bg-amber/15 text-ochre"
-                aria-hidden="true"
+          <li class="bg-paper-card p-7">
+            <span
+              class="flex size-9 items-center justify-center rounded-lg bg-amber/15 text-ochre"
+              aria-hidden="true"
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
               >
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2.2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <path d="M5 12l5 5L20 7" />
-                </svg>
-              </span>
-              <h3 class="mt-4 text-lg font-bold text-ink">{{ feature.title }}</h3>
-              <p class="mt-2 text-[0.92rem] leading-relaxed text-ink-soft">
-                {{ feature.body }}
-              </p>
-            </li>
+                <path d="M5 12l5 5L20 7" />
+              </svg>
+            </span>
+            <h3 class="mt-4 text-lg font-bold text-ink">{{ feature.title }}</h3>
+            <p class="mt-2 text-[0.92rem] leading-relaxed text-ink-soft">
+              {{ feature.body }}
+            </p>
+          </li>
           }
         </ul>
       </div>
@@ -232,17 +335,18 @@
   <!-- ========================= ARCHITECTURE ========================= -->
   <section id="architecture" class="wrap scroll-mt-20 py-24 lg:py-32">
     <div class="max-w-2xl">
-      <p class="eyebrow">Two packages, one seam</p>
-      <h2 class="section-h mt-3">
-        A browser half and a Node half that meet at the dev server.
-      </h2>
+      <p class="eyebrow">{{ 'architecture.eyebrow' | translate }}</p>
+      <h2 class="section-h mt-3">{{ 'architecture.title' | translate }}</h2>
     </div>
 
     <div class="mt-14 grid gap-6 md:grid-cols-2">
       <article class="rounded-2xl border border-line bg-paper-card p-8">
         <div class="flex items-center justify-between">
-          <code class="font-mono text-sm font-semibold text-ink">&#64;live-i18n/client</code>
-          <span class="rounded-full bg-amber/15 px-2.5 py-1 text-xs font-bold tracking-wide text-ochre"
+          <code class="font-mono text-sm font-semibold text-ink"
+            >&#64;live-i18n/client</code
+          >
+          <span
+            class="rounded-full bg-amber/15 px-2.5 py-1 text-xs font-bold tracking-wide text-ochre"
             >BROWSER</span
           >
         </div>
@@ -253,36 +357,60 @@
           each key, and POSTs your edits back to the dev server.
         </p>
         <ul class="mt-6 space-y-2.5 text-sm text-ink-soft">
-          <li class="flex gap-2.5"><span class="text-ochre">→</span> Runtime element tagging</li>
-          <li class="flex gap-2.5"><span class="text-ochre">→</span> Invisible key markers + reverse-lookup</li>
-          <li class="flex gap-2.5"><span class="text-ochre">→</span> Overlay, editor &amp; toggle UI</li>
+          <li class="flex gap-2.5">
+            <span class="text-ochre">→</span> Runtime element tagging
+          </li>
+          <li class="flex gap-2.5">
+            <span class="text-ochre">→</span> Invisible key markers +
+            reverse-lookup
+          </li>
+          <li class="flex gap-2.5">
+            <span class="text-ochre">→</span> Overlay, editor &amp; toggle UI
+          </li>
         </ul>
       </article>
 
-      <article class="rounded-2xl border border-night-line bg-night p-8 text-paper">
+      <article
+        class="rounded-2xl border border-night-line bg-night p-8 text-paper"
+      >
         <div class="flex items-center justify-between">
-          <code class="font-mono text-sm font-semibold text-paper">&#64;live-i18n/plugin</code>
-          <span class="rounded-full bg-teal/25 px-2.5 py-1 text-xs font-bold tracking-wide text-teal-bright"
+          <code class="font-mono text-sm font-semibold text-paper"
+            >&#64;live-i18n/plugin</code
+          >
+          <span
+            class="rounded-full bg-teal/25 px-2.5 py-1 text-xs font-bold tracking-wide text-teal-bright"
             >NODE</span
           >
         </div>
         <p class="mt-5 leading-relaxed text-paper/70">
           A custom dev-server builder that wraps Angular's
-          <code class="kbd kbd--dark">executeDevServerBuilder</code> and mounts a
-          middleware on <code class="kbd kbd--dark">POST /__live-i18n-update</code>,
-          safely rewriting your translation JSON on disk.
+          <code class="kbd kbd--dark">executeDevServerBuilder</code> and mounts
+          a middleware on
+          <code class="kbd kbd--dark">POST /__live-i18n-update</code>, safely
+          rewriting your translation JSON on disk.
         </p>
         <ul class="mt-6 space-y-2.5 text-sm text-paper/65">
-          <li class="flex gap-2.5"><span class="text-teal-bright">→</span> Routes edits across searchRoots</li>
-          <li class="flex gap-2.5"><span class="text-teal-bright">→</span> Path-traversal &amp; prototype-pollution guards</li>
-          <li class="flex gap-2.5"><span class="text-teal-bright">→</span> Preserves indentation &amp; newline</li>
+          <li class="flex gap-2.5">
+            <span class="text-teal-bright">→</span> Routes edits across
+            searchRoots
+          </li>
+          <li class="flex gap-2.5">
+            <span class="text-teal-bright">→</span> Path-traversal &amp;
+            prototype-pollution guards
+          </li>
+          <li class="flex gap-2.5">
+            <span class="text-teal-bright">→</span> Preserves indentation &amp;
+            newline
+          </li>
         </ul>
       </article>
     </div>
 
     <p class="mt-8 max-w-3xl text-sm leading-relaxed text-ink-muted">
-      <strong class="font-semibold text-ink-soft">Why a builder, not a Vite
-      plugin?</strong> Angular's dev server runs Vite in-memory — there's no
+      <strong class="font-semibold text-ink-soft"
+        >Why a builder, not a Vite plugin?</strong
+      >
+      Angular's dev server runs Vite in-memory — there's no
       <code class="kbd">vite.config</code> to register a plugin in, and AOT
       templates never pass through Vite's transform. The supported seam is the
       public <code class="kbd">executeDevServerBuilder</code> API — a standard
@@ -298,16 +426,16 @@
         <p
           class="text-xs font-bold uppercase tracking-[0.18em] text-amber-bright"
         >
-          Get started
+          {{ 'getStarted.eyebrow' | translate }}
         </p>
         <h2 class="section-h mt-3 text-paper">
-          Wired up in four steps.
+          {{ 'getStarted.title' | translate }}
         </h2>
         <p class="mt-5 text-lg text-paper/65">
-          One install, one builder swap, one provider. Then
+          <span>{{ 'getStarted.intro.a' | translate }}</span>&ngsp;
           <code class="kbd kbd--dark">nx serve</code> /
-          <code class="kbd kbd--dark">ng serve</code> and start editing — the
-          steps work the same in an Nx workspace or a plain Angular CLI app.
+          <code class="kbd kbd--dark">ng serve</code>&ngsp;
+          <span>{{ 'getStarted.intro.b' | translate }}</span>
         </p>
       </div>
 
@@ -317,7 +445,9 @@
           <div class="step-marker">
             <span class="step-num">1</span>
             <h3 class="step-title">Install both packages</h3>
-            <p class="step-desc">Dev dependencies only — nothing reaches your bundle.</p>
+            <p class="step-desc">
+              Dev dependencies only — nothing reaches your bundle.
+            </p>
           </div>
           <app-code-block [code]="cmdInstall" />
         </div>
@@ -340,7 +470,7 @@
               folders.
             </p>
           </div>
-          <div>
+          <div class="min-w-0">
             <div
               class="mb-3 flex flex-wrap gap-2"
               role="tablist"
@@ -403,7 +533,7 @@
               string. Edits write straight to disk.
             </p>
           </div>
-          <div class="max-w-md">
+          <div class="min-w-0 max-w-md">
             <app-code-block [code]="cmdServe" />
           </div>
         </div>
@@ -413,8 +543,13 @@
 
   <!-- ============================ CTA ============================ -->
   <section class="wrap py-24 text-center lg:py-32">
-    <h2 class="font-display mx-auto max-w-3xl text-[clamp(2rem,4.5vw,3.4rem)] font-semibold leading-[1.02] tracking-tight text-ink">
-      Translate where you can <span class="italic text-ochre">see</span> it.
+    <h2
+      class="font-display mx-auto max-w-3xl text-[clamp(2rem,4.5vw,3.4rem)] font-semibold leading-[1.02] tracking-tight text-ink"
+    >
+      <span>{{ 'cta.lead' | translate }}</span>&ngsp;
+      <span class="italic text-ochre">{{ 'cta.accent' | translate }}</span
+      >&ngsp;
+      <span>{{ 'cta.trail' | translate }}</span>
     </h2>
     <div class="mt-9 flex flex-wrap justify-center gap-3">
       <a
@@ -439,13 +574,34 @@
     class="wrap flex flex-col items-start justify-between gap-6 py-10 sm:flex-row sm:items-center"
   >
     <app-logo [size]="28" />
-    <nav class="flex flex-wrap gap-x-7 gap-y-2 text-sm text-ink-soft" aria-label="Footer">
+    <nav
+      class="flex flex-wrap gap-x-7 gap-y-2 text-sm text-ink-soft"
+      aria-label="Footer"
+    >
       <a class="transition hover:text-ochre" href="#how">How it works</a>
       <a class="transition hover:text-ochre" href="#features">Features</a>
       <a class="transition hover:text-ochre" href="#get-started">Get started</a>
-      <a class="transition hover:text-ochre" href="https://github.com/mrososs/live-i18n-tool" rel="noopener" target="_blank">GitHub</a>
-      <a class="transition hover:text-ochre" href="https://www.npmjs.com/package/@live-i18n/client" rel="noopener" target="_blank">npm</a>
-      <a class="transition hover:text-ochre" href="https://www.linkedin.com/in/mohamedosos98/" rel="noopener" target="_blank">LinkedIn</a>
+      <a
+        class="transition hover:text-ochre"
+        href="https://github.com/mrososs/live-i18n-tool"
+        rel="noopener"
+        target="_blank"
+        >GitHub</a
+      >
+      <a
+        class="transition hover:text-ochre"
+        href="https://www.npmjs.com/package/@live-i18n/client"
+        rel="noopener"
+        target="_blank"
+        >npm</a
+      >
+      <a
+        class="transition hover:text-ochre"
+        href="https://www.linkedin.com/in/mohamedosos98/"
+        rel="noopener"
+        target="_blank"
+        >LinkedIn</a
+      >
     </nav>
     <p class="font-mono text-xs text-ink-muted">
       MIT · {{ year }} · Built by
