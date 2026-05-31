@@ -10,6 +10,17 @@ runs only during `ng serve` and is completely inert in production builds.
 No more hunting through nested JSON files to find the key behind a piece of UI
 text. You edit translations where you see them — in the browser, in context.
 
+## Demo
+
+A ~60-second tour: arm the inspector, hover a translated string, rewrite it, and
+watch the matching key land in `<lang>.json` on disk. Want it in context? The
+[**live landing page**](https://mrososs.github.io/live-i18n-tool/) runs the
+editor on itself.
+
+<video src="https://github.com/mrososs/live-i18n-tool/raw/main/apps/landing/src/assets/video/live-i18n.mp4" controls playsinline width="100%"></video>
+
+> Not playing inline? [**Watch / download the demo video**](apps/landing/src/assets/video/live-i18n.mp4).
+
 ## How it works
 
 Two packages cooperate at dev time:
