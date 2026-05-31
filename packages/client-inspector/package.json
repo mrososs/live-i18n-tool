@@ -1,6 +1,33 @@
 {
   "name": "@live-i18n/client",
   "version": "0.0.1",
+  "description": "Zero-config, in-context translation editor for Angular. Hover any translated text during ng serve, click, edit, and the matching key in your *.json files is rewritten on disk. Pairs with @live-i18n/plugin.",
+  "keywords": [
+    "angular",
+    "i18n",
+    "internationalization",
+    "translation",
+    "ngx-translate",
+    "in-context-editor",
+    "live-edit",
+    "developer-tools",
+    "dev-server",
+    "standalone"
+  ],
+  "author": "Mohamed Osama <mohamed.osama@obeikan.com.sa>",
+  "license": "MIT",
+  "homepage": "https://github.com/mrososs/live-i18n-tool/tree/main/packages/client-inspector#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrososs/live-i18n-tool.git",
+    "directory": "packages/client-inspector"
+  },
+  "bugs": {
+    "url": "https://github.com/mrososs/live-i18n-tool/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "peerDependencies": {
     "@angular/common": "^21.2.0",
     "@angular/core": "^21.2.0"
