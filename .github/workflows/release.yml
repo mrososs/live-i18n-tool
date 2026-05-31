@@ -35,9 +35,13 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: 'npm'
           registry-url: 'https://registry.npmjs.org'
+
+      # Match the npm major the lockfile was generated with (npm 11) so
+      # `npm ci` resolves an identical tree. Node 22 ships npm 10 by default.
+      - run: npm install -g npm@11
 
       - run: npm ci
 
