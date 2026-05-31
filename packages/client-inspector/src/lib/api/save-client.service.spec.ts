@@ -22,6 +22,19 @@ describe('SaveClient', () => {
     return TestBed.inject(SaveClient);
   }
 
+  /** Builds a minimal `Response` stub matching how `save()` reads the body. */
+  function mockFetchResponse(init: {
+    ok: boolean;
+    status: number;
+    body?: string;
+  }): Response {
+    return {
+      ok: init.ok,
+      status: init.status,
+      text: async () => init.body ?? '',
+    } as unknown as Response;
+  }
+
   afterEach(() => {
     vi.restoreAllMocks();
     vi.unstubAllGlobals();
@@ -30,7 +43,9 @@ describe('SaveClient', () => {
   it('POSTs { key, value, lang } to the configured endpoint', async () => {
     const fetchMock = vi
       .fn()
-      .mockResolvedValue({ ok: true, status: 200 } as Response);
+      .mockResolvedValue(
+        mockFetchResponse({ ok: true, status: 200, body: '{"ok":true}' }),
+      );
     vi.stubGlobal('fetch', fetchMock);
 
     const client = setup('ar', '/__save');
@@ -47,21 +62,70 @@ describe('SaveClient', () => {
     });
   });
 
-  it('reports a failed response without throwing', async () => {
+  it('flags a 404 (no plugin route) as plugin-unavailable', async () => {
     vi.stubGlobal(
       'fetch',
-      vi.fn().mockResolvedValue({
-        ok: false,
-        status: 404,
-        text: async () => 'not found',
-      } as unknown as Response),
+      vi
+        .fn()
+        .mockResolvedValue(
+          mockFetchResponse({ ok: false, status: 404, body: '<h1>Not Found</h1>' }),
+        ),
     );
-    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    const errorSpy = vi
+      .spyOn(console, 'error')
+      .mockImplementation(() => undefined);
 
     const result = await setup().save('missing.key', 'x');
 
     expect(result.ok).toBe(false);
-    expect(result.status).toBe(404);
+    expect(result.kind).toBe('plugin-unavailable');
+    expect(errorSpy.mock.calls[0]?.[0]).toContain('@live-i18n/plugin');
+  });
+
+  it('flags a 200 SPA fallback (index.html) as plugin-unavailable', async () => {
+    // The core silent-data-loss bug: the bare dev server answers POSTs with the
+    // SPA index.html at 200, which must NOT be treated as a successful save.
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(
+        mockFetchResponse({
+          ok: true,
+          status: 200,
+          body: '<!doctype html><html><body>app</body></html>',
+        }),
+      ),
+    );
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+
+    const result = await setup().save('demo.title', 'x');
+
+    expect(result.ok).toBe(false);
+    expect(result.kind).toBe('plugin-unavailable');
+  });
+
+  it('surfaces a server error from the plugin JSON contract', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(
+        mockFetchResponse({
+          ok: false,
+          status: 404,
+          body: '{"ok":false,"error":"Translation file not found: ar.json"}',
+        }),
+      ),
+    );
+    const errorSpy = vi
+      .spyOn(console, 'error')
+      .mockImplementation(() => undefined);
+
+    const result = await setup('ar').save('demo.title', 'x');
+
+    expect(result.ok).toBe(false);
+    expect(result.kind).toBe('server-error');
+    expect(result.error).toBe('Translation file not found: ar.json');
+    expect(errorSpy.mock.calls[0]?.[0]).toContain(
+      'Translation file not found: ar.json',
+    );
   });
 
   it('reports a network error without throwing', async () => {
@@ -71,6 +135,7 @@ describe('SaveClient', () => {
     const result = await setup().save('demo.title', 'x');
 
     expect(result.ok).toBe(false);
+    expect(result.kind).toBe('network-error');
     expect(result.error).toBe('offline');
   });
 });
