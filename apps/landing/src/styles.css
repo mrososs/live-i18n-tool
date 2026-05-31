@@ -1,0 +1,237 @@
+@import 'tailwindcss';
+
+/* Explicitly scan this app's templates + class strings so utility generation
+ * is deterministic in dev watch mode (not reliant on auto content detection). */
+@source './**/*.{html,ts}';
+
+/* ================================================================== *
+ * Live i18n — editorial / developer-craft theme
+ * Warm paper surface · true ink · a single amber accent.
+ * Dark "night" is reserved for code + the get-started moment.
+ * ================================================================== */
+@theme {
+  /* paper (warm light surfaces) */
+  --color-paper: #f7f2e8;
+  --color-paper-deep: #efe6d5;
+  --color-paper-card: #fffdf7;
+  --color-line: #e2d6bf;
+  --color-line-soft: #ece2cf;
+
+  /* ink (warm near-black text + dark surfaces) */
+  --color-ink: #211c15;
+  --color-ink-soft: #4a4234;
+  --color-ink-muted: #837860;
+
+  /* night (the dark sections / code) */
+  --color-night: #18130d;
+  --color-night-soft: #221b13;
+  --color-night-line: #352b1e;
+
+  /* amber — the one sharp accent */
+  --color-amber: #e08a2b;
+  --color-amber-bright: #f2a03f;
+  --color-ochre: #9a5713; /* AA-contrast accent text on paper */
+
+  /* teal — quiet secondary (code strings, links on dark) */
+  --color-teal: #2f7d75;
+  --color-teal-bright: #5cbfb4;
+
+  --font-display: 'Fraunces', ui-serif, Georgia, 'Times New Roman', serif;
+  --font-sans: 'Hanken Grotesk', ui-sans-serif, system-ui, -apple-system,
+    'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', 'Cascadia Code',
+    monospace;
+}
+
+/* ------------------------------------------------------------------ */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--color-paper);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.font-display {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--color-amber) 32%, transparent);
+  color: var(--color-ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-ochre);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+/* layout helper */
+.wrap {
+  width: 100%;
+  max-width: 1180px;
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 4.5vw, 3.25rem);
+}
+
+/* hairline rule with an editorial tick */
+.rule {
+  height: 1px;
+  background: var(--color-line);
+}
+
+/* skip link */
+.skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 100;
+  transform: translateY(-150%);
+  background: var(--color-ink);
+  color: var(--color-paper);
+  padding: 0.55rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  transition: transform 0.18s ease;
+}
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+/* faint paper grid — only on the hero, very subtle */
+.paper-grid {
+  background-image:
+    linear-gradient(
+      to right,
+      color-mix(in oklab, var(--color-ink) 4%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in oklab, var(--color-ink) 4%, transparent) 1px,
+      transparent 1px
+    );
+  background-size: 56px 56px;
+  -webkit-mask-image: radial-gradient(
+    ellipse 90% 70% at 70% 35%,
+    #000 0%,
+    transparent 75%
+  );
+  mask-image: radial-gradient(
+    ellipse 90% 70% at 70% 35%,
+    #000 0%,
+    transparent 75%
+  );
+}
+
+/* ---- one orchestrated load reveal -------------------------------- */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .rise {
+    opacity: 0;
+    animation: rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+}
+
+/* blinking text caret used in the demo + logo */
+@keyframes caret-blink {
+  0%,
+  48% {
+    opacity: 1;
+  }
+  52%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ---- browser-demo loop (kept global to stay within component budgets) ---- */
+@keyframes demo-hover {
+  0%,
+  10% {
+    outline-color: transparent;
+    background: transparent;
+  }
+  18%,
+  82% {
+    outline-color: color-mix(in oklab, var(--color-amber) 85%, transparent);
+    background: color-mix(in oklab, var(--color-amber) 12%, transparent);
+  }
+  92%,
+  100% {
+    outline-color: transparent;
+    background: transparent;
+  }
+}
+
+@keyframes demo-tag {
+  0%,
+  16% {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  24%,
+  82% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  90%,
+  100% {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+@keyframes demo-pop {
+  0%,
+  24% {
+    opacity: 0;
+    transform: translateY(14px) scale(0.96);
+  }
+  34%,
+  86% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  96%,
+  100% {
+    opacity: 0;
+    transform: translateY(14px) scale(0.96);
+  }
+}
+
+@keyframes demo-save {
+  0%,
+  66% {
+    background: var(--color-amber-bright);
+    color: var(--color-night);
+  }
+  72%,
+  80% {
+    background: var(--color-teal-bright);
+    color: var(--color-night);
+  }
+  86%,
+  100% {
+    background: var(--color-amber-bright);
+    color: var(--color-night);
+  }
+}

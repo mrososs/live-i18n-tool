@@ -1,0 +1,75 @@
+name: Deploy landing page
+
+# Builds apps/landing and publishes it to GitHub Pages (free static hosting).
+#
+# One-time setup: in the repo, go to Settings → Pages → "Build and deployment"
+# and set Source = "GitHub Actions". The site is then served at
+#   https://mrososs.github.io/live-i18n-tool/
+# (matching the --base-href below).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/landing/**'
+      - '.github/workflows/deploy-landing.yml'
+      - 'package-lock.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment; don't cancel an in-progress publish.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          filter: tree:0
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      # Match the npm major the lockfile was generated with (npm 11) so
+      # `npm ci` resolves an identical tree. Node 22 ships npm 10 by default.
+      - run: npm install -g npm@11
+
+      - run: npm ci
+
+      # Project Pages live under /<repo>/, so the app must be built with a
+      # matching base href or its assets and router 404-fallback break.
+      - name: Build landing page
+        run: npx nx build landing --configuration=production --base-href=/live-i18n-tool/
+
+      # SPA fallback (client routing) + disable Jekyll so no files are stripped.
+      - name: Add SPA fallback and .nojekyll
+        run: |
+          cp dist/apps/landing/browser/index.html dist/apps/landing/browser/404.html
+          touch dist/apps/landing/browser/.nojekyll
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/apps/landing/browser
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
