@@ -1,11 +1,30 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
-import { TranslationFileError, updateTranslationFile } from './update-translation-file.js';
+import { resolve } from 'node:path';
+import {
+  TranslationFileError,
+  writeTranslationAtPath,
+} from './update-translation-file.js';
+import type { TranslationIndexer } from './translation-indexer.js';
+
+/** Developer escape hatch: route a `key`/`lang` to an explicit file path. */
+export type ResolveFilePath = (
+  key: string,
+  lang: string,
+) => string | undefined;
 
 export interface SaveMiddlewareOptions {
-  /** Absolute path to the folder containing locale JSON files. */
-  translationsPath: string;
   /** Route the middleware listens on (e.g. `/__live-i18n-update`). */
   endpoint: string;
+  /** Index mapping `lang:key` → owning file, built at server startup. */
+  indexer: TranslationIndexer;
+  /** Absolute fallback folder for keys not found in the index (new keys). */
+  defaultPath: string;
+  /** Absolute folders every resolved write path must stay within. */
+  allowedRoots: string[];
+  /** Optional custom resolver, consulted before the index. */
+  resolveFilePath?: ResolveFilePath;
+  /** Optional logger for non-fatal warnings (e.g. resolver throwing). */
+  logger?: { warn(message: string): void };
 }
 
 /** Body posted by `@live-i18n/client` when a translation is saved. */
@@ -49,7 +68,8 @@ function sendJson(res: ServerResponse, status: number, body: unknown): void {
  * requested key in the matching locale file. All other requests fall through.
  */
 export function createSaveMiddleware(options: SaveMiddlewareOptions) {
-  const { translationsPath, endpoint } = options;
+  const { endpoint, indexer, defaultPath, allowedRoots, resolveFilePath, logger } =
+    options;
 
   return function liveI18nSaveMiddleware(
     req: IncomingMessage,
@@ -83,7 +103,21 @@ export function createSaveMiddleware(options: SaveMiddlewareOptions) {
           return;
         }
 
-        updateTranslationFile(translationsPath, lang, key, value);
+        // Resolution order: custom resolver → startup index → default folder.
+        const indexed = indexer.resolve(lang, key);
+        const filePath =
+          resolveCustom(resolveFilePath, key, lang, logger) ??
+          indexed ??
+          resolve(defaultPath, `${lang}.json`);
+
+        writeTranslationAtPath(filePath, lang, key, value, { allowedRoots });
+
+        // A key not already in the index (new key, or routed by the resolver)
+        // is recorded so repeat edits land in the same file.
+        if (indexed === undefined) {
+          indexer.record(lang, key, filePath);
+        }
+
         sendJson(res, 200, { ok: true, key, lang });
       } catch (error) {
         if (error instanceof TranslationFileError) {
@@ -94,4 +128,29 @@ export function createSaveMiddleware(options: SaveMiddlewareOptions) {
       }
     })();
   };
+}
+
+/**
+ * Call the optional resolver, swallowing failures: a throwing or empty resolver
+ * simply falls through to the index/default so a bad hook never breaks saving.
+ */
+function resolveCustom(
+  resolveFilePath: ResolveFilePath | undefined,
+  key: string,
+  lang: string,
+  logger: { warn(message: string): void } | undefined,
+): string | undefined {
+  if (!resolveFilePath) {
+    return undefined;
+  }
+  try {
+    const custom = resolveFilePath(key, lang);
+    return typeof custom === 'string' && custom.length > 0 ? custom : undefined;
+  } catch (error) {
+    logger?.warn(
+      `[live-i18n] resolveFilePath threw for "${key}" (${lang}); ` +
+        `falling back to the index. ${(error as Error).message}`,
+    );
+    return undefined;
+  }
 }

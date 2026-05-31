@@ -21,7 +21,16 @@
     "!**/*.tsbuildinfo"
   ],
   "nx": {
-    "name": "dev-plugin"
+    "name": "dev-plugin",
+    "targets": {
+      "test": {
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "vitest run --config vitest.config.mts",
+          "cwd": "packages/dev-plugin"
+        }
+      }
+    }
   },
   "dependencies": {
     "@angular-devkit/architect": "^0.2102.0",
