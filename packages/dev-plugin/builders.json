@@ -1,0 +1,9 @@
+{
+  "builders": {
+    "dev-server": {
+      "implementation": "./dist/lib/dev-server/builder.js",
+      "schema": "./schema.json",
+      "description": "Angular dev server with the live-i18n save API mounted."
+    }
+  }
+}
