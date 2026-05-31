@@ -1,14 +1,24 @@
 import {
   ApplicationConfig,
   inject,
+  isDevMode,
   provideBrowserGlobalErrorListeners,
 } from '@angular/core';
 import { provideHttpClient } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
-import { TranslateService, provideTranslateService } from '@ngx-translate/core';
+import {
+  TranslatePipe,
+  TranslateService,
+  provideTranslateService,
+} from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
-import { provideLiveTranslations } from '@live-i18n/client';
+import { enableKeyMarkers, provideLiveTranslations } from '@live-i18n/client';
 import { appRoutes } from './app.routes';
+
+// Emit invisible key markers from the translate pipe so the inspector can
+// recover the exact key per element — even when two keys render the same text
+// (dev-only; a no-op in production builds).
+enableKeyMarkers(TranslatePipe, isDevMode());
 
 export const appConfig: ApplicationConfig = {
   providers: [

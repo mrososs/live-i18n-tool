@@ -1,7 +1,112 @@
 {
-  "demo": {
-    "title": "Live i18n Tool — Playground",
-    "greeting": "Bello, {{name}}!",
-    "switchLanguage": "Switch language"
+  "nav": {
+    "brand": "Live i18n",
+    "features": "Features",
+    "howItWorks": "How it works",
+    "pricing": "Pricing",
+    "faq": "FAQ",
+    "getStarted": "Get started"
+  },
+  "hero": {
+    "badge": "New · Zero-config in-context editing",
+    "title": "Translate your app without leaving the browser",
+    "subtitle": "Hover any text, click, edit, and save. Your translation files are rewritten on disk — formatting preserved, no rebuild required.",
+    "greeting": "Welcome back, {{name}} 👋",
+    "ctaPrimary": "Get started",
+    "ctaSecondary": "Watch the 2-min demo",
+    "trustNote": "Loved by {{count}} teams shipping in {{locales}}+ languages."
+  },
+  "stats": {
+    "languages": "{{count}} languages supported",
+    "savedHours": "{{count}} hours saved every week",
+    "keysEdited": "{{count}} keys edited live",
+    "uptime": "99.9% uptime — it runs on your machine"
+  },
+  "features": {
+    "heading": "Everything you need to localize fast",
+    "subheading": "Built for developers and translators to work side by side.",
+    "inContext": {
+      "title": "In-context editing",
+      "body": "See exactly where a string lives. What you edit is what your users read."
+    },
+    "noRebuild": {
+      "title": "No rebuild, no restart",
+      "body": "Changes hit your JSON files instantly while the dev server keeps running."
+    },
+    "formatSafe": {
+      "title": "Format-safe writes",
+      "body": "Indentation, key order, and trailing commas survive every save — diffs stay clean."
+    },
+    "rtlReady": {
+      "title": "RTL-ready",
+      "body": "Arabic, Hebrew & Persian render right-to-left out of the box. Test layouts the moment you switch."
+    }
+  },
+  "howItWorks": {
+    "heading": "Three steps. That's it.",
+    "step1": {
+      "title": "1. Hover",
+      "body": "Move your cursor over any translated text to reveal its key."
+    },
+    "step2": {
+      "title": "2. Edit",
+      "body": "Click to open the floating editor and rewrite the value in place."
+    },
+    "step3": {
+      "title": "3. Save",
+      "body": "Press save and the matching key in *.json is updated on disk."
+    }
+  },
+  "pricing": {
+    "heading": "Simple, honest pricing",
+    "subheading": "Free while it's local. Pay only when your team grows.",
+    "monthly": "/ month",
+    "free": {
+      "name": "Solo",
+      "price": "$0",
+      "tagline": "For hobby projects & trials",
+      "cta": "Start for free"
+    },
+    "team": {
+      "name": "Team",
+      "price": "$29",
+      "tagline": "For shipping teams of any size",
+      "cta": "Choose Team"
+    },
+    "enterprise": {
+      "name": "Enterprise",
+      "price": "Let's talk",
+      "tagline": "SSO, audit logs & priority support",
+      "cta": "Contact sales"
+    }
+  },
+  "faq": {
+    "heading": "Frequently asked questions",
+    "q1": {
+      "q": "Does it work without a build step?",
+      "a": "Yes — it runs entirely during ng serve and writes straight to your translation files."
+    },
+    "q2": {
+      "q": "Will it mess up my JSON formatting?",
+      "a": "No. We preserve indentation & key order so your git diffs only show what actually changed."
+    },
+    "q3": {
+      "q": "Which i18n libraries are supported?",
+      "a": "We target @ngx-translate/core today, with more adapters on the way."
+    }
+  },
+  "cta": {
+    "title": "Ready to translate the easy way?",
+    "subtitle": "Drop the inspector into your dev server and edit your first key in under a minute.",
+    "button": "Get started"
+  },
+  "footer": {
+    "tagline": "The in-context translation editor for Angular.",
+    "product": "Product",
+    "resources": "Resources",
+    "docs": "Documentation",
+    "changelog": "Changelog",
+    "github": "GitHub",
+    "rights": "© 2026 Live i18n. All rights reserved."
   }
 }
