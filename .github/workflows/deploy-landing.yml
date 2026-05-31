@@ -57,13 +57,12 @@ jobs:
           cp dist/apps/landing/browser/index.html dist/apps/landing/browser/404.html
           touch dist/apps/landing/browser/.nojekyll
 
-      # enablement: true auto-creates/enables the Pages site (source = Actions)
-      # via the API, so no manual Settings → Pages step is required.
-      - uses: actions/configure-pages@v5
-        with:
-          enablement: true
+      # Pages is enabled at the repo level (Settings → Pages → Source: GitHub
+      # Actions). The workflow token can't create the site itself, so this
+      # step only reads/configures the existing one.
+      - uses: actions/configure-pages@v6
 
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: dist/apps/landing/browser
 
@@ -76,4 +75,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
