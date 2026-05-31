@@ -1,6 +1,7 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { LIVE_TRANSLATIONS_CONFIG } from '../../config/live-translations.config';
 import { InspectorStateService } from '../../state/inspector-state.service';
 import { InspectorEditor } from './inspector-editor';
 
@@ -8,6 +9,8 @@ describe('InspectorEditor', () => {
   let fixture: ComponentFixture<InspectorEditor>;
   let state: InspectorStateService;
   let target: HTMLElement;
+  /** Mutable per-test dictionary returned by the config's getTranslations. */
+  let translations: Record<string, unknown>;
 
   const panel = (): HTMLElement | null =>
     fixture.nativeElement.querySelector('.li18n-editor');
@@ -39,8 +42,21 @@ describe('InspectorEditor', () => {
   }
 
   beforeEach(() => {
+    // Raw value carries an interpolation placeholder the DOM never renders, so
+    // tests can prove the textarea seeds from the dictionary, not the DOM text.
+    translations = { demo: { title: 'Hello, {{name}}!' } };
     TestBed.configureTestingModule({
-      providers: [provideZonelessChangeDetection()],
+      providers: [
+        provideZonelessChangeDetection(),
+        {
+          provide: LIVE_TRANSLATIONS_CONFIG,
+          useValue: {
+            getLocale: () => 'en',
+            getTranslations: () => translations,
+            endpoint: '/__live-i18n-update',
+          },
+        },
+      ],
     });
     state = TestBed.inject(InspectorStateService);
     fixture = TestBed.createComponent(InspectorEditor);
@@ -49,6 +65,7 @@ describe('InspectorEditor', () => {
   afterEach(() => {
     document.body.innerHTML = '';
     vi.restoreAllMocks();
+    vi.unstubAllGlobals();
   });
 
   it('renders nothing when not editing', async () => {
@@ -56,12 +73,29 @@ describe('InspectorEditor', () => {
     expect(panel()).toBeNull();
   });
 
-  it('shows the active key and seeds the textarea from the element text', async () => {
+  it('shows the active key and seeds the textarea from the raw dictionary value', async () => {
+    // The element renders the interpolated "Hello, World!", but the editor must
+    // surface the canonical source string with its placeholder intact.
     await openEditorFor('Hello, World!');
 
     expect(panel()).not.toBeNull();
     expect(keyEl().textContent).toContain('demo.title');
-    expect(textarea().value).toBe('Hello, World!');
+    expect(textarea().value).toBe('Hello, {{name}}!');
+  });
+
+  it('falls back to the element text when the key is missing from the dictionary', async () => {
+    translations = {};
+
+    await openEditorFor('Switch language (en)');
+
+    expect(textarea().value).toBe('Switch language (en)');
+  });
+
+  it('gives the textarea an id and name for accessibility', async () => {
+    await openEditorFor('Hello, World!');
+
+    expect(textarea().id).toBe('li18n-editor-input');
+    expect(textarea().name).toBe('li18n-editor-input');
   });
 
   it('live-previews the draft into the real element as the user types', async () => {
@@ -84,8 +118,14 @@ describe('InspectorEditor', () => {
     expect(panel()).toBeNull();
   });
 
-  it('keeps the previewed text, logs, and closes when Save is clicked', async () => {
-    const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
+  it('keeps the previewed text, posts the edit, and closes when Save is clicked', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      text: async () => '',
+    } as unknown as Response);
+    vi.stubGlobal('fetch', fetchMock);
+
     await openEditorFor('Hello, World!');
     await type('Saved value');
 
@@ -94,9 +134,15 @@ describe('InspectorEditor', () => {
 
     expect(target.textContent).toBe('Saved value');
     expect(state.isEditing()).toBe(false);
-    expect(log).toHaveBeenCalledWith('[live-i18n] save', {
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+
+    const [url, requestInit] = fetchMock.mock.calls[0] as [string, RequestInit];
+    expect(url).toBe('/__live-i18n-update');
+    expect(requestInit.method).toBe('POST');
+    expect(JSON.parse(requestInit.body as string)).toEqual({
       key: 'demo.title',
       value: 'Saved value',
+      lang: 'en',
     });
   });
 
