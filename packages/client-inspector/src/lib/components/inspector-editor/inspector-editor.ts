@@ -8,6 +8,8 @@ import {
   linkedSignal,
   untracked,
 } from '@angular/core';
+import { SaveClient } from '../../api/save-client.service';
+import { LIVE_TRANSLATIONS_CONFIG } from '../../config/live-translations.config';
 import { InspectorStateService } from '../../state/inspector-state.service';
 
 /** Approximate panel width, used to clamp it inside the viewport. */
@@ -16,11 +18,30 @@ const PANEL_WIDTH = 300;
 const GAP = 8;
 
 /**
+ * Resolve a dotted translation key (`a.b.c`) against a nested dictionary,
+ * returning the leaf string value, or `null` when the key is absent or its
+ * value is not a string.
+ */
+function resolveTranslation(
+  dictionary: Record<string, unknown>,
+  key: string,
+): string | null {
+  let node: unknown = dictionary;
+  for (const segment of key.split('.')) {
+    if (node === null || typeof node !== 'object' || Array.isArray(node)) {
+      return null;
+    }
+    node = (node as Record<string, unknown>)[segment];
+  }
+  return typeof node === 'string' ? node : null;
+}
+
+/**
  * Floating popover for editing the translation of the active element.
  *
  * Positioned with `position: fixed` just below the highlighted element and
- * clamped to the viewport. For now "Save" only logs the key/value pair;
- * persistence will be wired to the API later.
+ * clamped to the viewport. "Save" posts the edit to the dev-plugin (which
+ * rewrites the locale file on disk); the live preview already reflects it.
  */
 @Component({
   selector: 'li18n-inspector-editor',
@@ -42,6 +63,8 @@ const GAP = 8;
         </header>
 
         <textarea
+          id="li18n-editor-input"
+          name="li18n-editor-input"
           class="li18n-editor__input"
           rows="3"
           [value]="draft()"
@@ -67,6 +90,8 @@ const GAP = 8;
 })
 export class InspectorEditor {
   protected readonly state = inject(InspectorStateService);
+  private readonly saveClient = inject(SaveClient);
+  private readonly config = inject(LIVE_TRANSLATIONS_CONFIG, { optional: true });
   private readonly window = inject(DOCUMENT).defaultView;
 
   /** Element whose text is being previewed, plus its text before editing. */
@@ -74,13 +99,23 @@ export class InspectorEditor {
   private originalText: string | null = null;
 
   /**
-   * Editable draft, seeded from the element's current text. Re-seeds whenever
-   * a different key becomes active (the `source`).
+   * Editable draft, seeded from the raw dictionary value for the active key so
+   * the user edits the canonical source string (including any `{{ … }}`
+   * placeholders) rather than the interpolated text rendered in the DOM. Falls
+   * back to the element's text when the key is missing from the dictionary.
+   * Re-seeds whenever a different key becomes active (the `source`).
    */
   protected readonly draft = linkedSignal({
     source: this.state.activeKey,
-    computation: () =>
-      this.state.hoveredElement()?.textContent?.trim() ?? '',
+    computation: (key) => {
+      const fromDictionary =
+        key !== null
+          ? resolveTranslation(this.config?.getTranslations() ?? {}, key)
+          : null;
+      return (
+        fromDictionary ?? this.state.hoveredElement()?.textContent?.trim() ?? ''
+      );
+    },
   });
 
   constructor() {
@@ -125,9 +160,9 @@ export class InspectorEditor {
   protected save(): void {
     const key = this.state.activeKey();
     if (key !== null) {
-      // API integration will replace this log. The preview text already lives
-      // in the DOM, so saving just keeps it.
-      console.log('[live-i18n] save', { key, value: this.draft() });
+      // Persist to disk via the dev-plugin. Optimistic: the preview text is
+      // already in the DOM, so we close immediately and let the POST settle.
+      void this.saveClient.save(key, this.draft());
     }
     this.resetPreview();
     this.state.closeEditor();

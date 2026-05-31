@@ -4,6 +4,7 @@
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "builders": "./builders.json",
   "exports": {
     "./package.json": "./package.json",
     ".": {
@@ -15,12 +16,18 @@
   },
   "files": [
     "dist",
+    "builders.json",
+    "schema.json",
     "!**/*.tsbuildinfo"
   ],
   "nx": {
     "name": "dev-plugin"
   },
   "dependencies": {
+    "@angular-devkit/architect": "^0.2102.0",
     "tslib": "^2.3.0"
+  },
+  "peerDependencies": {
+    "@angular/build": "^21.2.0"
   }
 }

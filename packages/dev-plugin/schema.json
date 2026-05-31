@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "title": "Live i18n Dev Server Builder",
+  "description": "Wraps @angular/build:dev-server and mounts the live-i18n save API.",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "buildTarget": {
+      "type": "string",
+      "description": "A build builder target to serve in the format `project:target[:configuration]`."
+    },
+    "translationsPath": {
+      "type": "string",
+      "description": "Workspace-relative path to the folder containing locale JSON files (e.g. apps/playground/public/i18n)."
+    },
+    "endpoint": {
+      "type": "string",
+      "description": "Dev-server route that accepts translation save requests.",
+      "default": "/__live-i18n-update"
+    }
+  },
+  "required": ["buildTarget", "translationsPath"]
+}
