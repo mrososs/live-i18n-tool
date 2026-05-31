@@ -45,9 +45,9 @@ jobs:
 
       - run: npm ci
 
-      - name: Lint & test publishable packages
-        run: npx nx run-many -t lint test -p client-inspector dev-plugin
-
+      # Quality gating (lint/test/e2e) is handled by ci.yml on every push/PR.
+      # Releases are cut from an already-green commit, so this workflow only
+      # builds the publishable artifacts and publishes them.
       - name: Build publishable packages
         run: npx nx run-many -t build -p client-inspector dev-plugin
 
