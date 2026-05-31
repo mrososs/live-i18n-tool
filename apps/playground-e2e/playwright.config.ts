@@ -28,6 +28,8 @@ export default defineConfig({
     url: 'http://localhost:4200',
     reuseExistingServer: true,
     cwd: workspaceRoot,
+    // The Angular dev server (custom builder) can be slow to cold-start in CI.
+    timeout: 120_000,
   },
   projects: [
     {

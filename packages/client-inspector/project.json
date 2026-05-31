@@ -2,7 +2,7 @@
   "name": "client-inspector",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/client-inspector/src",
-  "prefix": "lib",
+  "prefix": "li18n",
   "projectType": "library",
   "release": {
     "version": {
