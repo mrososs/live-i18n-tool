@@ -1,0 +1,52 @@
+<div class="demo" role="img" aria-label="A browser running ng serve. A heading reading 'Welcome back' is highlighted; a floating editor shows its translation key home.hero.title being edited and saved.">
+  <!-- window chrome -->
+  <div class="demo__bar">
+    <span class="demo__dots">
+      <i></i><i></i><i></i>
+    </span>
+    <span class="demo__url">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true">
+        <rect x="4" y="11" width="16" height="10" rx="2" /><path d="M8 11V7a4 4 0 0 1 8 0v4" />
+      </svg>
+      localhost:4200
+    </span>
+    <span class="demo__live">● LIVE</span>
+  </div>
+
+  <!-- app content -->
+  <div class="demo__app">
+    <p class="demo__eyebrow">YOUR&nbsp;ACCOUNT</p>
+
+    <h3 class="demo__h">
+      <span class="demo__target">
+        Welcome back
+        <span class="demo__tag">data-i18n-key="home.hero.title"</span>
+      </span>
+    </h3>
+
+    <p class="demo__body">
+      Pick up where you left off. Your drafts are saved and ready.
+    </p>
+
+    <div class="demo__row">
+      <span class="demo__chip">EN</span>
+      <span class="demo__chip demo__chip--ghost">AR</span>
+      <span class="demo__chip demo__chip--ghost">FR</span>
+    </div>
+  </div>
+
+  <!-- floating editor popover -->
+  <div class="editor" aria-hidden="true">
+    <div class="editor__head">
+      <span class="editor__key">home.hero.title</span>
+      <span class="editor__lang">en.json</span>
+    </div>
+    <div class="editor__field">
+      <span class="editor__caret-text">Welcome back</span><span class="editor__caret"></span>
+    </div>
+    <div class="editor__foot">
+      <span class="editor__hint">⏎ to save</span>
+      <span class="editor__save">Save</span>
+    </div>
+  </div>
+</div>
