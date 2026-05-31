@@ -1,0 +1,55 @@
+name: Release
+
+# Publishes @live-i18n/client and @live-i18n/plugin to the npm registry.
+#
+# Trigger one of two ways:
+#   1. Push a version tag, e.g.  git tag v0.1.0 && git push origin v0.1.0
+#   2. Run manually from the Actions tab (workflow_dispatch) — supports a
+#      dry-run that performs every step except the actual publish.
+#
+# Requires repository secret  NPM_TOKEN  (an npm automation/granular token with
+# publish rights to the @live-i18n scope).
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: 'Dry run (build + pack, but do not publish)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  id-token: write # required for npm provenance attestations
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
+
+      - run: npm ci
+
+      - name: Lint & test publishable packages
+        run: npx nx run-many -t lint test -p client-inspector dev-plugin
+
+      - name: Build publishable packages
+        run: npx nx run-many -t build -p client-inspector dev-plugin
+
+      - name: Publish to npm
+        run: npx nx release publish --projects client-inspector dev-plugin --access public ${{ (github.event_name == 'workflow_dispatch' && inputs.dry-run) && '--dry-run' || '' }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # Provenance only on real (tag) publishes; OIDC isn't issued for dry runs.
+          NPM_CONFIG_PROVENANCE: ${{ github.event_name == 'push' }}

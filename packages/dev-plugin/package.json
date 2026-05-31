@@ -1,6 +1,33 @@
 {
   "name": "@live-i18n/plugin",
   "version": "0.0.1",
+  "description": "Node-side Angular dev-server builder for the Live i18n Editor. Wraps @angular/build:dev-server and mounts a save API that safely rewrites translation JSON on disk (formatting preserved). Pairs with @live-i18n/client.",
+  "keywords": [
+    "angular",
+    "i18n",
+    "internationalization",
+    "translation",
+    "ngx-translate",
+    "dev-server",
+    "builder",
+    "nx",
+    "developer-tools",
+    "in-context-editor"
+  ],
+  "author": "Mohamed Osama <mohamed.osama@obeikan.com.sa>",
+  "license": "MIT",
+  "homepage": "https://github.com/mrososs/live-i18n-tool/tree/main/packages/dev-plugin#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrososs/live-i18n-tool.git",
+    "directory": "packages/dev-plugin"
+  },
+  "bugs": {
+    "url": "https://github.com/mrososs/live-i18n-tool/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",

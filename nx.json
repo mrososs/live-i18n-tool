@@ -75,6 +75,7 @@
     }
   },
   "release": {
+    "projects": ["client-inspector", "dev-plugin"],
     "version": {
       "preVersionCommand": "npx nx run-many -t build"
     }
