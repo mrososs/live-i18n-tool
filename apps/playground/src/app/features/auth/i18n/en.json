@@ -1,0 +1,7 @@
+{
+  "auth": {
+    "login": "Log in",
+    "logout": "Log out",
+    "welcome": "Welcome to your account"
+  }
+}

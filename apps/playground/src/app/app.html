@@ -1,11 +1,185 @@
-<section style="padding: 1rem; font-family: sans-serif">
-  <h1 i18nKey="demo.title">{{ 'demo.title' | translate }}</h1>
-  <p i18nKey="demo.greeting">{{ 'demo.greeting' | translate: { name: 'World' } }}</p>
-  <button type="button" i18nKey="demo.switchLanguage" (click)="toggleLanguage()">
-    {{ 'demo.switchLanguage' | translate }} ({{ lang() }})
-  </button>
-</section>
+<header class="nav">
+  <a class="nav__brand" href="#">{{ 'nav.brand' | translate }}</a>
 
-<app-nx-welcome></app-nx-welcome>
-<router-outlet></router-outlet>
-4
+  <nav class="nav__links">
+    <a href="#features">{{ 'nav.features' | translate }}</a>
+    <a href="#how">{{ 'nav.howItWorks' | translate }}</a>
+    <a href="#pricing">{{ 'nav.pricing' | translate }}</a>
+    <a href="#faq">{{ 'nav.faq' | translate }}</a>
+  </nav>
+
+  <div class="nav__actions">
+    <button class="btn btn--ghost" type="button" (click)="toggleLanguage()">
+      {{ otherLanguageLabel() }}
+    </button>
+    <button class="btn btn--ghost" type="button">
+      {{ 'auth.login' | translate }}
+    </button>
+    <button class="btn btn--primary" type="button">
+      {{ 'nav.getStarted' | translate }}
+    </button>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <span class="hero__badge">{{ 'hero.badge' | translate }}</span>
+    <p class="hero__greeting">
+      {{ 'hero.greeting' | translate: greetingParams }}
+    </p>
+    <h1 class="hero__title">{{ 'hero.title' | translate }}</h1>
+    <p class="hero__subtitle">{{ 'hero.subtitle' | translate }}</p>
+
+    <div class="hero__cta">
+      <button class="btn btn--primary btn--lg" type="button">
+        {{ 'hero.ctaPrimary' | translate }}
+      </button>
+      <button class="btn btn--ghost btn--lg" type="button">
+        {{ 'hero.ctaSecondary' | translate }}
+      </button>
+    </div>
+
+    <p class="hero__trust">{{ 'hero.trustNote' | translate: trustParams }}</p>
+  </section>
+
+  <section class="stats">
+    <div class="stat">{{ 'stats.languages' | translate: languagesParams }}</div>
+    <div class="stat">{{ 'stats.savedHours' | translate: savedHoursParams }}</div>
+    <div class="stat">{{ 'stats.keysEdited' | translate: keysEditedParams }}</div>
+    <div class="stat">{{ 'stats.uptime' | translate }}</div>
+  </section>
+
+  <section id="features" class="features">
+    <h2 class="section__heading">{{ 'features.heading' | translate }}</h2>
+    <p class="section__subheading">{{ 'features.subheading' | translate }}</p>
+
+    <div class="cards">
+      <article class="card">
+        <h3>{{ 'features.inContext.title' | translate }}</h3>
+        <p>{{ 'features.inContext.body' | translate }}</p>
+      </article>
+      <article class="card">
+        <h3>{{ 'features.noRebuild.title' | translate }}</h3>
+        <p>{{ 'features.noRebuild.body' | translate }}</p>
+      </article>
+      <article class="card">
+        <h3>{{ 'features.formatSafe.title' | translate }}</h3>
+        <p>{{ 'features.formatSafe.body' | translate }}</p>
+      </article>
+      <article class="card">
+        <h3>{{ 'features.rtlReady.title' | translate }}</h3>
+        <p>{{ 'features.rtlReady.body' | translate }}</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="how" class="how">
+    <h2 class="section__heading">{{ 'howItWorks.heading' | translate }}</h2>
+
+    <ol class="steps">
+      <li class="step">
+        <h3>{{ 'howItWorks.step1.title' | translate }}</h3>
+        <p>{{ 'howItWorks.step1.body' | translate }}</p>
+      </li>
+      <li class="step">
+        <h3>{{ 'howItWorks.step2.title' | translate }}</h3>
+        <p>{{ 'howItWorks.step2.body' | translate }}</p>
+      </li>
+      <li class="step">
+        <h3>{{ 'howItWorks.step3.title' | translate }}</h3>
+        <p>{{ 'howItWorks.step3.body' | translate }}</p>
+      </li>
+    </ol>
+  </section>
+
+  <section id="pricing" class="pricing">
+    <h2 class="section__heading">{{ 'pricing.heading' | translate }}</h2>
+    <p class="section__subheading">{{ 'pricing.subheading' | translate }}</p>
+
+    <div class="cards">
+      <article class="tier">
+        <h3>{{ 'pricing.free.name' | translate }}</h3>
+        <p class="tier__price">
+          {{ 'pricing.free.price' | translate }}
+          <span class="tier__period">{{ 'pricing.monthly' | translate }}</span>
+        </p>
+        <p class="tier__tagline">{{ 'pricing.free.tagline' | translate }}</p>
+        <button class="btn btn--ghost" type="button">
+          {{ 'pricing.free.cta' | translate }}
+        </button>
+      </article>
+
+      <article class="tier tier--featured">
+        <h3>{{ 'pricing.team.name' | translate }}</h3>
+        <p class="tier__price">
+          {{ 'pricing.team.price' | translate }}
+          <span class="tier__period">{{ 'pricing.monthly' | translate }}</span>
+        </p>
+        <p class="tier__tagline">{{ 'pricing.team.tagline' | translate }}</p>
+        <button class="btn btn--primary" type="button">
+          {{ 'pricing.team.cta' | translate }}
+        </button>
+      </article>
+
+      <article class="tier">
+        <h3>{{ 'pricing.enterprise.name' | translate }}</h3>
+        <p class="tier__price">{{ 'pricing.enterprise.price' | translate }}</p>
+        <p class="tier__tagline">
+          {{ 'pricing.enterprise.tagline' | translate }}
+        </p>
+        <button class="btn btn--ghost" type="button">
+          {{ 'pricing.enterprise.cta' | translate }}
+        </button>
+      </article>
+    </div>
+  </section>
+
+  <section id="faq" class="faq">
+    <h2 class="section__heading">{{ 'faq.heading' | translate }}</h2>
+
+    <div class="faq__item">
+      <h3>{{ 'faq.q1.q' | translate }}</h3>
+      <p>{{ 'faq.q1.a' | translate }}</p>
+    </div>
+    <div class="faq__item">
+      <h3>{{ 'faq.q2.q' | translate }}</h3>
+      <p>{{ 'faq.q2.a' | translate }}</p>
+    </div>
+    <div class="faq__item">
+      <h3>{{ 'faq.q3.q' | translate }}</h3>
+      <p>{{ 'faq.q3.a' | translate }}</p>
+    </div>
+  </section>
+
+  <section class="cta">
+    <h2>{{ 'cta.title' | translate }}</h2>
+    <p>{{ 'cta.subtitle' | translate }}</p>
+    <p class="cta__account">{{ 'auth.welcome' | translate }}</p>
+    <button class="btn btn--primary btn--lg" type="button">
+      {{ 'cta.button' | translate }}
+    </button>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="footer__brand">
+    <strong>{{ 'nav.brand' | translate }}</strong>
+    <p>{{ 'footer.tagline' | translate }}</p>
+  </div>
+
+  <div class="footer__col">
+    <h4>{{ 'footer.product' | translate }}</h4>
+    <a href="#features">{{ 'nav.features' | translate }}</a>
+    <a href="#pricing">{{ 'nav.pricing' | translate }}</a>
+    <a href="#">{{ 'footer.changelog' | translate }}</a>
+  </div>
+
+  <div class="footer__col">
+    <h4>{{ 'footer.resources' | translate }}</h4>
+    <a href="#">{{ 'footer.docs' | translate }}</a>
+    <a href="#faq">{{ 'nav.faq' | translate }}</a>
+    <a href="#">{{ 'footer.github' | translate }}</a>
+  </div>
+
+  <p class="footer__rights">{{ 'footer.rights' | translate }}</p>
+</footer>

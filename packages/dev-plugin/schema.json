@@ -11,12 +11,25 @@
     },
     "translationsPath": {
       "type": "string",
-      "description": "Workspace-relative path to the folder containing locale JSON files (e.g. apps/playground/public/i18n)."
+      "description": "Workspace-relative path to the primary folder of locale JSON files. Used as the default destination for new keys and as a search root (e.g. apps/playground/src/assets/i18n)."
     },
     "endpoint": {
       "type": "string",
       "description": "Dev-server route that accepts translation save requests.",
       "default": "/__live-i18n-update"
+    },
+    "searchRoots": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Workspace-relative folders scanned recursively for <lang>.json files (feature-split i18n). Defaults to [translationsPath]. node_modules/dist are skipped."
+    },
+    "defaultPath": {
+      "type": "string",
+      "description": "Workspace-relative fallback folder for keys not found in any scanned file. Defaults to translationsPath."
+    },
+    "configFile": {
+      "type": "string",
+      "description": "Workspace-relative .mjs/.js module whose default export may provide { resolveFilePath, searchRoots, defaultPath }. Required to supply a resolveFilePath function."
     }
   },
   "required": ["buildTarget", "translationsPath"]

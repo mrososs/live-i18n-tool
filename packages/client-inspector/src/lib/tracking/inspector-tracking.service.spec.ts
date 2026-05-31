@@ -312,4 +312,54 @@ describe('InspectorTrackingService', () => {
       expect(raf).toHaveBeenCalledTimes(1);
     });
   });
+
+  // ---------------------------------------------------------------------------
+  // Editing locks the selection — hover must not re-target an open editor
+  // ---------------------------------------------------------------------------
+  describe('selection is locked while editing', () => {
+    it('does NOT re-target on hover while the editor is open', () => {
+      runRafSynchronously();
+      const first = translatable('demo.title');
+      const second = translatable('demo.greeting');
+      state.setHoveredElement(first, 'demo.title', new DOMRect());
+      state.openEditor();
+      tracking.init();
+
+      // Cursor travels over another translatable element (e.g. on its way to
+      // the editor panel) — the selection must stay pinned to the first.
+      second.dispatchEvent(new MouseEvent('mousemove', { bubbles: true }));
+
+      expect(state.isEditing()).toBe(true);
+      expect(state.hoveredElement()).toBe(first);
+      expect(state.activeKey()).toBe('demo.title');
+    });
+
+    it('does not even schedule a frame on hover while editing', () => {
+      const raf = vi.spyOn(window, 'requestAnimationFrame');
+      const first = translatable('demo.title');
+      state.setHoveredElement(first, 'demo.title', new DOMRect());
+      state.openEditor();
+      tracking.init();
+
+      document.body.dispatchEvent(new MouseEvent('mousemove', { bubbles: true }));
+
+      expect(raf).not.toHaveBeenCalled();
+    });
+
+    it('a click STILL re-targets the editor onto the pressed element', () => {
+      const first = translatable('demo.title');
+      const second = translatable('demo.greeting');
+      state.setHoveredElement(first, 'demo.title', new DOMRect());
+      state.openEditor();
+      tracking.init();
+
+      second.dispatchEvent(
+        new MouseEvent('click', { bubbles: true, cancelable: true }),
+      );
+
+      expect(state.isEditing()).toBe(true);
+      expect(state.hoveredElement()).toBe(second);
+      expect(state.activeKey()).toBe('demo.greeting');
+    });
+  });
 });

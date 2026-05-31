@@ -1,5 +1,5 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
-import { resolve, sep } from 'node:path';
+import { basename, resolve, sep } from 'node:path';
 
 /**
  * Error carrying the HTTP status the save middleware should respond with.
@@ -15,7 +15,7 @@ export class TranslationFileError extends Error {
 }
 
 /** Locale codes are restricted to safe filename characters (path-traversal guard). */
-const LOCALE_PATTERN = /^[a-zA-Z][a-zA-Z0-9_-]*$/;
+export const LOCALE_PATTERN = /^[a-zA-Z][a-zA-Z0-9_-]*$/;
 
 /** Key segments that would enable prototype pollution. */
 const FORBIDDEN_SEGMENTS = new Set(['__proto__', 'prototype', 'constructor']);
@@ -44,17 +44,38 @@ function setDeep(
   node[segments[segments.length - 1]] = value;
 }
 
+/** True when `filePath` sits within (or equals) one of the `allowedRoots`. */
+function isWithinAllowedRoots(filePath: string, allowedRoots: string[]): boolean {
+  return allowedRoots.some((root) => {
+    const base = resolve(root);
+    return filePath === base || filePath.startsWith(base + sep);
+  });
+}
+
+/** Options for {@link writeTranslationAtPath}. */
+export interface WriteTranslationOptions {
+  /** Absolute folders the resolved file MUST stay within (traversal guard). */
+  allowedRoots: string[];
+}
+
 /**
- * Rewrite a single translation key in `<basePath>/<lang>.json`, preserving the
- * file's existing indentation and trailing newline.
+ * Rewrite a single translation key in an already-resolved JSON file, preserving
+ * the file's existing indentation and trailing newline.
+ *
+ * The caller is responsible for choosing which file to write (single folder,
+ * feature-split index, or a custom resolver). This function enforces the safety
+ * invariants regardless of how the path was chosen: the path must end in
+ * `.json`, stay within `allowedRoots`, and the key must not contain empty or
+ * prototype-polluting segments.
  *
  * @throws {@link TranslationFileError} with a 400/404/500 status on failure.
  */
-export function updateTranslationFile(
-  basePath: string,
+export function writeTranslationAtPath(
+  filePath: string,
   lang: string,
   key: string,
   value: string,
+  options: WriteTranslationOptions,
 ): void {
   if (!LOCALE_PATTERN.test(lang)) {
     throw new TranslationFileError(`Invalid locale "${lang}".`, 400);
@@ -68,27 +89,31 @@ export function updateTranslationFile(
     throw new TranslationFileError(`Invalid translation key "${key}".`, 400);
   }
 
-  const base = resolve(basePath);
-  const filePath = resolve(base, `${lang}.json`);
-  if (filePath !== base && !filePath.startsWith(base + sep)) {
-    throw new TranslationFileError('Resolved path escapes the translations folder.', 400);
+  const resolved = resolve(filePath);
+  if (!resolved.endsWith('.json')) {
+    throw new TranslationFileError('Resolved path is not a .json file.', 400);
   }
-  if (!existsSync(filePath)) {
-    throw new TranslationFileError(`Translation file not found: ${lang}.json`, 404);
+  if (!isWithinAllowedRoots(resolved, options.allowedRoots)) {
+    throw new TranslationFileError('Resolved path escapes the allowed roots.', 400);
   }
+  if (!existsSync(resolved)) {
+    throw new TranslationFileError(`Translation file not found: ${basename(resolved)}`, 404);
+  }
+
+  const name = basename(resolved);
 
   let source: string;
   try {
-    source = readFileSync(filePath, 'utf8');
+    source = readFileSync(resolved, 'utf8');
   } catch (error) {
-    throw new TranslationFileError(`Cannot read ${lang}.json: ${(error as Error).message}`, 500);
+    throw new TranslationFileError(`Cannot read ${name}: ${(error as Error).message}`, 500);
   }
 
   let data: Record<string, unknown>;
   try {
     data = JSON.parse(source) as Record<string, unknown>;
   } catch (error) {
-    throw new TranslationFileError(`Invalid JSON in ${lang}.json: ${(error as Error).message}`, 500);
+    throw new TranslationFileError(`Invalid JSON in ${name}: ${(error as Error).message}`, 500);
   }
 
   setDeep(data, segments, value);
@@ -98,8 +123,29 @@ export function updateTranslationFile(
   const output = `${JSON.stringify(data, null, indent)}${trailingNewline}`;
 
   try {
-    writeFileSync(filePath, output, 'utf8');
+    writeFileSync(resolved, output, 'utf8');
   } catch (error) {
-    throw new TranslationFileError(`Cannot write ${lang}.json: ${(error as Error).message}`, 500);
+    throw new TranslationFileError(`Cannot write ${name}: ${(error as Error).message}`, 500);
   }
+}
+
+/**
+ * Rewrite a single translation key in `<basePath>/<lang>.json`. Back-compat
+ * wrapper around {@link writeTranslationAtPath} for the single-folder setup.
+ *
+ * @throws {@link TranslationFileError} with a 400/404/500 status on failure.
+ */
+export function updateTranslationFile(
+  basePath: string,
+  lang: string,
+  key: string,
+  value: string,
+): void {
+  if (!LOCALE_PATTERN.test(lang)) {
+    throw new TranslationFileError(`Invalid locale "${lang}".`, 400);
+  }
+  const base = resolve(basePath);
+  writeTranslationAtPath(resolve(base, `${lang}.json`), lang, key, value, {
+    allowedRoots: [base],
+  });
 }
