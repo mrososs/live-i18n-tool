@@ -7,13 +7,14 @@ import {
 import { provideHttpClient } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import {
+  TranslateLoader,
   TranslatePipe,
   TranslateService,
   provideTranslateService,
 } from '@ngx-translate/core';
-import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 import { enableKeyMarkers, provideLiveTranslations } from '@live-i18n/client';
 import { appRoutes } from './app.routes';
+import { MergingTranslateLoader } from './i18n/merging-translate-loader';
 
 // Emit invisible key markers from the translate pipe so the inspector can
 // recover the exact key per element — even when two keys render the same text
@@ -26,10 +27,9 @@ export const appConfig: ApplicationConfig = {
     provideRouter(appRoutes),
     provideHttpClient(),
     provideTranslateService({
-      loader: provideTranslateHttpLoader({
-        prefix: '/assets/i18n/',
-        suffix: '.json',
-      }),
+      // Deep-merges the app-wide dictionary with feature dictionaries so
+      // feature-split translation files behave as one dictionary at runtime.
+      loader: { provide: TranslateLoader, useClass: MergingTranslateLoader },
       fallbackLang: 'en',
       lang: 'en',
     }),
