@@ -18,6 +18,11 @@
           {
             "glob": "**/*",
             "input": "apps/playground/public"
+          },
+          {
+            "glob": "**/*",
+            "input": "apps/playground/src/assets",
+            "output": "assets"
           }
         ],
         "styles": ["apps/playground/src/styles.scss"]
@@ -48,7 +53,11 @@
     },
     "serve": {
       "continuous": true,
-      "executor": "@angular/build:dev-server",
+      "executor": "@live-i18n/plugin:dev-server",
+      "dependsOn": ["^build", { "projects": ["dev-plugin"], "target": "build" }],
+      "options": {
+        "translationsPath": "apps/playground/src/assets/i18n"
+      },
       "configurations": {
         "production": {
           "buildTarget": "playground:build:production"
