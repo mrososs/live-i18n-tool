@@ -1,11 +1,15 @@
-import { Component, provideZonelessChangeDetection, signal } from '@angular/core';
+import {
+  Component,
+  provideZonelessChangeDetection,
+  signal,
+} from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { I18nKeyDirective } from './i18n-key.directive';
 
 @Component({
   imports: [I18nKeyDirective],
-  template: `<h1 [i18nKey]="key()">Title</h1>`,
+  template: `<h1 [li18nKey]="key()">Title</h1>`,
 })
 class HostComponent {
   readonly key = signal('demo.title');

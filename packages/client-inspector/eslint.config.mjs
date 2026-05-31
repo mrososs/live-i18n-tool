@@ -12,6 +12,8 @@ export default [
         'error',
         {
           ignoredFiles: ['{projectRoot}/eslint.config.{js,cjs,mjs,ts,cts,mts}'],
+          // vitest is a dev/test-only tool, not a runtime peer dependency.
+          ignoredDependencies: ['vitest'],
         },
       ],
     },
@@ -26,7 +28,7 @@ export default [
         'error',
         {
           type: 'attribute',
-          prefix: 'lib',
+          prefix: 'li18n',
           style: 'camelCase',
         },
       ],
@@ -34,7 +36,7 @@ export default [
         'error',
         {
           type: 'element',
-          prefix: 'lib',
+          prefix: 'li18n',
           style: 'kebab-case',
         },
       ],
