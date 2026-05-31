@@ -32,10 +32,10 @@
 
 Two-package design that work together at dev time only:
 
-- **`@live-i18n/client`** ([packages/client-inspector/](packages/client-inspector/)) — standalone Angular component injected into the host app. Renders the hover overlay + floating editor and POSTs `{ key, value, locale }` back to the dev server.
-- **`@live-i18n/plugin`** ([packages/dev-plugin/](packages/dev-plugin/)) — Node-side plugin. Parses Angular HTML templates to inject `data-i18n-key` attributes, and hosts a middleware endpoint that safely rewrites translation JSON files.
+- **`@live-i18n/client`** ([packages/client-inspector/](packages/client-inspector/)) — standalone Angular library wired in via `provideLiveTranslations(...)`. On dev startup it mounts the overlay/editor/toggle onto `document.body`, auto-tags translated elements with `data-i18n-key` at **runtime** (no template annotations needed), and POSTs `{ key, value, lang }` back to the dev server.
+- **`@live-i18n/plugin`** ([packages/dev-plugin/](packages/dev-plugin/)) — Node-side custom dev-server builder (`@live-i18n/plugin:dev-server`) that wraps `executeDevServerBuilder` and mounts a middleware on `POST /__live-i18n-update`, safely rewriting translation JSON files (routing edits across feature-split folders via `searchRoots`).
 
-**Current state (2026-05):** Both packages are at `v0.0.1` with placeholder implementations. The playground app uses Angular's esbuild-based `@angular/build:dev-server` — **not Vite**. The README's "Vite plugin" framing is aspirational; the actual integration surface is still TBD.
+**Current state (2026-05):** Both packages are at `v0.0.1` but have **working implementations** exercised end-to-end by the playground (duplicate-text disambiguation via invisible key markers, feature-split translation files). The playground uses Angular's esbuild-based dev server — **not Vite** — so build-time HTML injection is impossible; element tagging happens at runtime in the client instead. The integration seam is the custom builder, not a Vite plugin.
 
 ## 2. Workspace Layout
 
@@ -43,7 +43,7 @@ Two-package design that work together at dev time only:
 apps/playground/            # Angular 21 test app (consumes ngx-translate + the inspector lib)
 apps/playground-e2e/        # Playwright e2e tests for playground
 packages/client-inspector/  # @live-i18n/client — standalone Angular component (ng-packagr build)
-packages/dev-plugin/        # @live-i18n/plugin — Node-side plugin (tsc build, placeholder)
+packages/dev-plugin/        # @live-i18n/plugin — Node-side dev-server builder (tsc build)
 .verdaccio/                 # Local npm registry config for dry-run publishing
 ```
 
