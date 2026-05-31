@@ -1,6 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { DestroyRef, inject, Injectable } from '@angular/core';
 import { LIVE_TRANSLATIONS_CONFIG } from '../config/live-translations.config';
+import { readKeyMarker } from './key-marker';
 
 /** Attribute the tracker looks for — kept in sync with the directive/tracker. */
 const I18N_KEY_ATTR = 'data-i18n-key';
@@ -102,9 +103,6 @@ export class AutoTagService {
   /** Rebuild the index from the current dictionary and tag matching elements. */
   private scan(): void {
     this.buildIndex();
-    if (this.exact.size === 0 && this.interpolated.length === 0) {
-      return;
-    }
 
     const walker = this.document.createTreeWalker(
       this.document.body,
@@ -112,16 +110,37 @@ export class AutoTagService {
     );
 
     for (let node = walker.nextNode(); node; node = walker.nextNode()) {
-      const text = node.nodeValue?.trim();
-      if (!text) {
+      const raw = node.nodeValue;
+      if (!raw) {
         continue;
       }
       const parent = node.parentElement;
-      if (
-        !parent ||
-        parent.hasAttribute(I18N_KEY_ATTR) ||
-        parent.closest(INSPECTOR_HOSTS)
-      ) {
+      if (!parent || parent.closest(INSPECTOR_HOSTS)) {
+        continue;
+      }
+
+      // Primary path: an invisible marker carries the *exact* key — this is the
+      // only way to disambiguate two keys that render identical text. Strip the
+      // marker so the DOM stays clean; Angular won't re-add it unless the bound
+      // value actually changes (e.g. a language switch), which re-tags safely.
+      const marked = readKeyMarker(raw);
+      if (marked) {
+        if (node.nodeValue !== marked.rest) {
+          node.nodeValue = marked.rest;
+        }
+        if (!parent.hasAttribute(I18N_KEY_ATTR)) {
+          parent.setAttribute(I18N_KEY_ATTR, marked.key);
+        }
+        continue;
+      }
+
+      // Fallback: reverse-match rendered text for un-marked nodes (static text,
+      // or i18n libraries without the marker patch). First key wins on ties.
+      if (parent.hasAttribute(I18N_KEY_ATTR)) {
+        continue;
+      }
+      const text = raw.trim();
+      if (!text) {
         continue;
       }
       const key = this.match(text);

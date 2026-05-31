@@ -10,6 +10,10 @@ export {
 } from './lib/config/live-translations.config';
 export { SaveClient, type SaveResult } from './lib/api/save-client.service';
 export { I18nKeyDirective } from './lib/directives/i18n-key.directive';
+export {
+  enableKeyMarkers,
+  type TranslatePipeLike,
+} from './lib/tracking/key-marker';
 export { InspectorStateService } from './lib/state/inspector-state.service';
 export { InspectorTrackingService } from './lib/tracking/inspector-tracking.service';
 export { AutoTagService } from './lib/tracking/auto-tag.service';
