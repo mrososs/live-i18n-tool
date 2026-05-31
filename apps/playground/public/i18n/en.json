@@ -1,0 +1,7 @@
+{
+  "demo": {
+    "title": "Live i18n Tool — Playground",
+    "greeting": "Hello, {{name}}!",
+    "switchLanguage": "Switch language"
+  }
+}
