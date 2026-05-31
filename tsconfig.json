@@ -2,5 +2,18 @@
   "extends": "./tsconfig.base.json",
   "compileOnSave": false,
   "files": [],
-  "references": []
+  "references": [
+    {
+      "path": "./packages/dev-plugin"
+    },
+    {
+      "path": "./apps/playground-e2e"
+    },
+    {
+      "path": "./packages/client-inspector"
+    },
+    {
+      "path": "./apps/playground"
+    }
+  ]
 }
