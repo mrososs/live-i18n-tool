@@ -75,11 +75,28 @@ A custom builder (`@live-i18n/plugin:dev-server`) wraps Angular's
 > seam is the public `executeDevServerBuilder(options, context, extensions)`
 > API, which this package wraps to inject the save middleware.
 
+## Compatibility
+
+`@live-i18n/plugin` is a standard **Angular CLI builder** (built on
+`@angular-devkit/architect`), not an Nx-only executor — Nx executors and Angular
+builders are the same underlying mechanism. It works with **any modern Angular
+project**, whether you use an Nx workspace or a plain Angular CLI app.
+
+The only real requirement is the **esbuild/Vite-based application builder**
+(`@angular/build`, the default for Angular **17+** apps). The plugin wraps that
+dev server's `executeDevServerBuilder`; it does **not** support the legacy
+Webpack builder (`@angular-devkit/build-angular:browser`/`:dev-server`).
+
+`@live-i18n/client` is a plain standalone Angular library and works in any
+Angular app.
+
 ## Usage
 
-**1. Point your app's `serve` target at the builder** (`project.json`):
+**1. Point your app's `serve` target at the builder.** In an **Nx workspace**,
+edit `project.json` — register it as an `executor`:
 
 ```jsonc
+// project.json (Nx)
 "serve": {
   "executor": "@live-i18n/plugin:dev-server",
   "continuous": true,
@@ -95,6 +112,28 @@ A custom builder (`@live-i18n/plugin:dev-server`) wraps Angular's
   "configurations": {
     "development": { "buildTarget": "playground:build:development" },
     "production": { "buildTarget": "playground:build:production" }
+  },
+  "defaultConfiguration": "development"
+}
+```
+
+In a **plain Angular CLI workspace**, edit `angular.json` instead — the field is
+`builder` (not `executor`), and there's no `continuous`/`dependsOn` (those are
+Nx task-graph concepts):
+
+```jsonc
+// angular.json (Angular CLI)
+"serve": {
+  "builder": "@live-i18n/plugin:dev-server",
+  "options": {
+    "buildTarget": "my-app:build",
+    "translationsPath": "src/assets/i18n",
+    // Optional: extra roots to scan for feature-split <lang>.json files.
+    "searchRoots": ["src/assets/i18n", "src/app/features"]
+  },
+  "configurations": {
+    "development": { "buildTarget": "my-app:build:development" },
+    "production": { "buildTarget": "my-app:build:production" }
   },
   "defaultConfiguration": "development"
 }
@@ -131,7 +170,8 @@ export const appConfig: ApplicationConfig = {
 **3. Serve as usual** — the inspector activates and the save API listens:
 
 ```bash
-npx nx serve playground
+npx nx serve playground   # Nx workspace
+ng serve                  # plain Angular CLI
 ```
 
 See [`packages/dev-plugin/README.md`](packages/dev-plugin/README.md) for the

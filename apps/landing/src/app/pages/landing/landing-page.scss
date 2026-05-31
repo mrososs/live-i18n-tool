@@ -1,0 +1,125 @@
+:host {
+  display: block;
+}
+
+/* nav */
+.nav-link {
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--color-ink-soft);
+  position: relative;
+  transition: color 0.2s ease;
+}
+.nav-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -0.35rem;
+  height: 2px;
+  width: 0;
+  background: var(--color-amber);
+  transition: width 0.25s ease;
+}
+.nav-link:hover {
+  color: var(--color-ink);
+}
+.nav-link:hover::after {
+  width: 100%;
+}
+
+/* section furniture */
+.eyebrow {
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+}
+
+.section-h {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.9rem, 3.7vw, 3rem);
+  line-height: 1.05;
+  letter-spacing: -0.018em;
+  /* color inherits — ink on paper, paper on the dark section */
+}
+
+/* inline code chips */
+.kbd {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  padding: 0.08em 0.4em;
+  border-radius: 5px;
+  background: color-mix(in oklab, var(--color-amber) 14%, transparent);
+  color: var(--color-ochre);
+}
+.kbd--dark {
+  background: var(--color-night-soft);
+  color: var(--color-amber-bright);
+}
+
+/* get-started step markers */
+.step-marker {
+  max-width: 28rem;
+}
+.step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-night-line);
+  font-family: var(--font-mono);
+  font-weight: 500;
+  color: var(--color-amber-bright);
+  margin-bottom: 1rem;
+}
+.side-tag {
+  display: inline-block;
+  margin-left: 0.7rem;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--color-teal-bright);
+  vertical-align: middle;
+}
+.step-title {
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  font-weight: 600;
+  line-height: 1.15;
+  color: var(--color-paper);
+}
+.step-desc {
+  margin-top: 0.65rem;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: rgba(247, 242, 232, 0.62);
+}
+
+/* Nx / Angular CLI toggle in step 2 */
+.tool-tab {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  border: 1px solid var(--color-night-line);
+  color: rgba(247, 242, 232, 0.55);
+  transition:
+    color 0.18s ease,
+    background 0.18s ease,
+    border-color 0.18s ease;
+  cursor: pointer;
+}
+.tool-tab:hover {
+  color: var(--color-paper);
+}
+.tool-tab.is-active {
+  background: var(--color-amber);
+  border-color: var(--color-amber);
+  color: var(--color-night);
+}

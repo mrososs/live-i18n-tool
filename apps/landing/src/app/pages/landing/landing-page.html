@@ -1,0 +1,461 @@
+<a class="skip-link" href="#get-started">Skip to install</a>
+
+<!-- ============================ HEADER ============================ -->
+<header
+  class="sticky top-0 z-50 border-b border-line/70 bg-paper/85 backdrop-blur-md"
+>
+  <div class="wrap flex h-16 items-center justify-between">
+    <a href="#top" class="flex items-center" aria-label="Live i18n — home">
+      <app-logo />
+    </a>
+
+    <nav class="hidden items-center gap-8 md:flex" aria-label="Primary">
+      <a class="nav-link" href="#how">How it works</a>
+      <a class="nav-link" href="#features">Features</a>
+      <a class="nav-link" href="#architecture">Architecture</a>
+      <a class="nav-link" href="#get-started">Get started</a>
+    </nav>
+
+    <div class="flex items-center gap-3">
+      <a
+        class="hidden text-sm font-medium text-ink-soft transition hover:text-ochre sm:inline"
+        href="https://github.com/mrososs/live-i18n-tool"
+        rel="noopener"
+        target="_blank"
+        >GitHub</a
+      >
+      <a
+        class="rounded-full bg-ink px-4 py-2 text-sm font-semibold text-paper transition hover:bg-ochre"
+        href="#get-started"
+        >Install</a
+      >
+    </div>
+  </div>
+</header>
+
+<main id="top">
+  <!-- ============================ HERO ============================ -->
+  <section class="relative overflow-hidden">
+    <div class="paper-grid pointer-events-none absolute inset-0"></div>
+
+    <div
+      class="wrap relative grid items-center gap-14 pt-16 pb-20 lg:grid-cols-[1.05fr_1fr] lg:pt-24 lg:pb-28"
+    >
+      <div>
+        <span
+          class="rise inline-flex items-center gap-2 rounded-full border border-line bg-paper-card px-3.5 py-1.5 text-xs font-semibold tracking-wide text-ink-soft"
+        >
+          <span class="size-1.5 rounded-full bg-amber"></span>
+          IN-CONTEXT I18N EDITOR FOR ANGULAR
+        </span>
+
+        <h1
+          class="rise font-display mt-6 text-[clamp(2.6rem,6vw,4.7rem)] font-semibold leading-[0.98] tracking-[-0.02em] text-ink"
+          style="animation-delay: 80ms"
+        >
+          Stop hunting for keys.
+          <span class="relative whitespace-nowrap">
+            <span class="italic text-ochre">Edit live</span>
+          </span>
+          where the text renders.
+        </h1>
+
+        <p
+          class="rise mt-7 max-w-xl text-lg leading-relaxed text-ink-soft"
+          style="animation-delay: 160ms"
+        >
+          Hover any translated string in your running app, click, and rewrite
+          it. The matching key in your <code class="kbd">*.json</code> is saved
+          to disk — indentation preserved. Zero config, local-first, and
+          completely inert in production.
+        </p>
+
+        <div
+          class="rise mt-9 flex flex-wrap items-center gap-3"
+          style="animation-delay: 240ms"
+        >
+          <a
+            href="#get-started"
+            class="inline-flex items-center gap-2 rounded-full bg-amber px-6 py-3 text-base font-semibold text-night shadow-[0_12px_28px_-10px_rgba(224,138,43,0.7)] transition hover:bg-amber-bright"
+          >
+            Get started
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.4"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M5 12h14M13 6l6 6-6 6" />
+            </svg>
+          </a>
+          <a
+            href="#how"
+            class="inline-flex items-center rounded-full border border-line bg-paper-card px-6 py-3 text-base font-semibold text-ink transition hover:border-ink/40"
+          >
+            See how it works
+          </a>
+        </div>
+
+        <div class="rise mt-8 w-full" style="animation-delay: 320ms">
+          <app-code-block [code]="cmdInstall" />
+        </div>
+      </div>
+
+      <div class="rise" style="animation-delay: 200ms">
+        <app-browser-demo />
+      </div>
+    </div>
+
+    <!-- thin trust strip -->
+    <div class="border-y border-line/70 bg-paper-deep/50">
+      <div
+        class="wrap flex flex-wrap items-center justify-center gap-x-8 gap-y-2 py-3.5 font-mono text-xs tracking-tight text-ink-muted"
+      >
+        <span>Angular&nbsp;21</span>
+        <span class="text-line">/</span>
+        <span>&#64;ngx-translate</span>
+        <span class="text-line">/</span>
+        <span>esbuild dev server</span>
+        <span class="text-line">/</span>
+        <span>dev-time only</span>
+        <span class="text-line">/</span>
+        <span>MIT</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================= HOW IT WORKS ========================= -->
+  <section id="how" class="wrap scroll-mt-20 py-24 lg:py-32">
+    <div class="max-w-2xl">
+      <p class="eyebrow">The loop</p>
+      <h2 class="section-h mt-3">
+        Four moves, from hover to disk.
+      </h2>
+      <p class="mt-5 text-lg text-ink-soft">
+        No round-trips through your editor, no key spelunking. The client and
+        the dev-server plugin cooperate so an edit in the browser lands in the
+        right file.
+      </p>
+    </div>
+
+    <ol class="mt-14 grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
+      @for (step of flow; track step.n) {
+        <li class="bg-paper-card p-7">
+          <span class="font-mono text-sm font-medium text-ochre">{{ step.n }}</span>
+          <h3 class="font-display mt-3 text-2xl font-semibold text-ink">
+            {{ step.title }}
+          </h3>
+          <p class="mt-2.5 text-[0.95rem] leading-relaxed text-ink-soft">
+            {{ step.body }}
+          </p>
+        </li>
+      }
+    </ol>
+
+    <!-- the wire -->
+    <div
+      class="mt-8 flex flex-col items-stretch gap-3 rounded-2xl border border-night-line bg-night p-5 font-mono text-sm text-paper/80 sm:flex-row sm:items-center sm:justify-between"
+    >
+      <span class="text-paper/55">browser <span class="text-amber-bright">›</span> dev server</span>
+      <code class="text-amber-bright"
+        >POST /__live-i18n-update
+        <span class="text-paper/55">&#123; key, value, lang &#125;</span></code
+      >
+      <span class="text-teal-bright">200 · &#123; ok: true &#125;</span>
+    </div>
+  </section>
+
+  <!-- =========================== FEATURES =========================== -->
+  <section id="features" class="bg-paper-deep/45 scroll-mt-20">
+    <div class="wrap py-24 lg:py-32">
+      <div class="grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
+        <div class="lg:sticky lg:top-28 lg:self-start">
+          <p class="eyebrow">Why it feels effortless</p>
+          <h2 class="section-h mt-3">
+            Built to disappear into your dev loop.
+          </h2>
+          <p class="mt-5 text-lg text-ink-soft">
+            The hard parts — finding the right key, writing the right file,
+            never breaking your build — are handled. You just edit text.
+          </p>
+
+          <div
+            class="mt-8 rounded-2xl border border-line bg-paper-card p-6"
+          >
+            <p class="font-display text-2xl font-semibold leading-snug text-ink">
+              Zero template annotations.
+            </p>
+            <p class="mt-3 text-[0.95rem] leading-relaxed text-ink-soft">
+              The client auto-tags translated elements at runtime and re-scans
+              with a <code class="kbd">MutationObserver</code> as the DOM and
+              active language change. You add nothing to your markup.
+            </p>
+          </div>
+        </div>
+
+        <ul class="grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2">
+          @for (feature of features; track feature.title) {
+            <li class="bg-paper-card p-7">
+              <span
+                class="flex size-9 items-center justify-center rounded-lg bg-amber/15 text-ochre"
+                aria-hidden="true"
+              >
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M5 12l5 5L20 7" />
+                </svg>
+              </span>
+              <h3 class="mt-4 text-lg font-bold text-ink">{{ feature.title }}</h3>
+              <p class="mt-2 text-[0.92rem] leading-relaxed text-ink-soft">
+                {{ feature.body }}
+              </p>
+            </li>
+          }
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================= ARCHITECTURE ========================= -->
+  <section id="architecture" class="wrap scroll-mt-20 py-24 lg:py-32">
+    <div class="max-w-2xl">
+      <p class="eyebrow">Two packages, one seam</p>
+      <h2 class="section-h mt-3">
+        A browser half and a Node half that meet at the dev server.
+      </h2>
+    </div>
+
+    <div class="mt-14 grid gap-6 md:grid-cols-2">
+      <article class="rounded-2xl border border-line bg-paper-card p-8">
+        <div class="flex items-center justify-between">
+          <code class="font-mono text-sm font-semibold text-ink">&#64;live-i18n/client</code>
+          <span class="rounded-full bg-amber/15 px-2.5 py-1 text-xs font-bold tracking-wide text-ochre"
+            >BROWSER</span
+          >
+        </div>
+        <p class="mt-5 leading-relaxed text-ink-soft">
+          A standalone Angular library wired in with
+          <code class="kbd">provideLiveTranslations(...)</code>. It mounts the
+          overlay, editor and toggle, auto-tags translated elements, resolves
+          each key, and POSTs your edits back to the dev server.
+        </p>
+        <ul class="mt-6 space-y-2.5 text-sm text-ink-soft">
+          <li class="flex gap-2.5"><span class="text-ochre">→</span> Runtime element tagging</li>
+          <li class="flex gap-2.5"><span class="text-ochre">→</span> Invisible key markers + reverse-lookup</li>
+          <li class="flex gap-2.5"><span class="text-ochre">→</span> Overlay, editor &amp; toggle UI</li>
+        </ul>
+      </article>
+
+      <article class="rounded-2xl border border-night-line bg-night p-8 text-paper">
+        <div class="flex items-center justify-between">
+          <code class="font-mono text-sm font-semibold text-paper">&#64;live-i18n/plugin</code>
+          <span class="rounded-full bg-teal/25 px-2.5 py-1 text-xs font-bold tracking-wide text-teal-bright"
+            >NODE</span
+          >
+        </div>
+        <p class="mt-5 leading-relaxed text-paper/70">
+          A custom dev-server builder that wraps Angular's
+          <code class="kbd kbd--dark">executeDevServerBuilder</code> and mounts a
+          middleware on <code class="kbd kbd--dark">POST /__live-i18n-update</code>,
+          safely rewriting your translation JSON on disk.
+        </p>
+        <ul class="mt-6 space-y-2.5 text-sm text-paper/65">
+          <li class="flex gap-2.5"><span class="text-teal-bright">→</span> Routes edits across searchRoots</li>
+          <li class="flex gap-2.5"><span class="text-teal-bright">→</span> Path-traversal &amp; prototype-pollution guards</li>
+          <li class="flex gap-2.5"><span class="text-teal-bright">→</span> Preserves indentation &amp; newline</li>
+        </ul>
+      </article>
+    </div>
+
+    <p class="mt-8 max-w-3xl text-sm leading-relaxed text-ink-muted">
+      <strong class="font-semibold text-ink-soft">Why a builder, not a Vite
+      plugin?</strong> Angular's dev server runs Vite in-memory — there's no
+      <code class="kbd">vite.config</code> to register a plugin in, and AOT
+      templates never pass through Vite's transform. The supported seam is the
+      public <code class="kbd">executeDevServerBuilder</code> API — a standard
+      Angular CLI builder, so it runs in any Angular 17+ project, Nx or plain
+      CLI.
+    </p>
+  </section>
+
+  <!-- ========================= GET STARTED ========================= -->
+  <section id="get-started" class="scroll-mt-16 bg-night text-paper">
+    <div class="wrap py-24 lg:py-32">
+      <div class="max-w-2xl">
+        <p
+          class="text-xs font-bold uppercase tracking-[0.18em] text-amber-bright"
+        >
+          Get started
+        </p>
+        <h2 class="section-h mt-3 text-paper">
+          Wired up in four steps.
+        </h2>
+        <p class="mt-5 text-lg text-paper/65">
+          One install, one builder swap, one provider. Then
+          <code class="kbd kbd--dark">nx serve</code> /
+          <code class="kbd kbd--dark">ng serve</code> and start editing — the
+          steps work the same in an Nx workspace or a plain Angular CLI app.
+        </p>
+      </div>
+
+      <div class="mt-16 space-y-14">
+        <!-- step 1 -->
+        <div class="grid gap-6 lg:grid-cols-[auto_1fr] lg:gap-10">
+          <div class="step-marker">
+            <span class="step-num">1</span>
+            <h3 class="step-title">Install both packages</h3>
+            <p class="step-desc">Dev dependencies only — nothing reaches your bundle.</p>
+          </div>
+          <app-code-block [code]="cmdInstall" />
+        </div>
+
+        <div class="rule bg-night-line"></div>
+
+        <!-- step 2 - plugin -->
+        <div class="grid gap-6 lg:grid-cols-[auto_1fr] lg:gap-10">
+          <div class="step-marker">
+            <span class="step-num">2</span>
+            <span class="side-tag">Plugin · Node</span>
+            <h3 class="step-title">Point your serve target at the builder</h3>
+            <p class="step-desc">
+              It's a standard Angular CLI builder — register it in
+              <code class="kbd kbd--dark">project.json</code> for Nx, or
+              <code class="kbd kbd--dark">angular.json</code> for a plain CLI
+              app — and point it at your
+              <code class="kbd kbd--dark">*.json</code> files. Add
+              <code class="kbd kbd--dark">searchRoots</code> for feature-split
+              folders.
+            </p>
+          </div>
+          <div>
+            <div
+              class="mb-3 flex flex-wrap gap-2"
+              role="tablist"
+              aria-label="Workspace type"
+            >
+              <button
+                type="button"
+                role="tab"
+                class="tool-tab"
+                [class.is-active]="serveTool() === 'nx'"
+                [attr.aria-selected]="serveTool() === 'nx'"
+                (click)="setServeTool('nx')"
+              >
+                Nx · project.json
+              </button>
+              <button
+                type="button"
+                role="tab"
+                class="tool-tab"
+                [class.is-active]="serveTool() === 'cli'"
+                [attr.aria-selected]="serveTool() === 'cli'"
+                (click)="setServeTool('cli')"
+              >
+                Angular CLI · angular.json
+              </button>
+            </div>
+            <app-code-block
+              [code]="serveTool() === 'nx' ? codePluginNx : codePluginCli"
+              [filename]="serveTool() === 'nx' ? 'project.json' : 'angular.json'"
+            />
+          </div>
+        </div>
+
+        <div class="rule bg-night-line"></div>
+
+        <!-- step 3 - client -->
+        <div class="grid gap-6 lg:grid-cols-[auto_1fr] lg:gap-10">
+          <div class="step-marker">
+            <span class="step-num">3</span>
+            <span class="side-tag">Client · Browser</span>
+            <h3 class="step-title">Enable the inspector</h3>
+            <p class="step-desc">
+              Turn on key markers and register the live-translations provider in
+              <code class="kbd kbd--dark">app.config.ts</code>. Both are no-ops
+              in production.
+            </p>
+          </div>
+          <app-code-block [code]="codeClient" filename="app.config.ts" />
+        </div>
+
+        <div class="rule bg-night-line"></div>
+
+        <!-- step 4 -->
+        <div class="grid gap-6 lg:grid-cols-[auto_1fr] lg:gap-10">
+          <div class="step-marker">
+            <span class="step-num">4</span>
+            <h3 class="step-title">Serve and edit</h3>
+            <p class="step-desc">
+              Start the dev server, open the app, and hover any translated
+              string. Edits write straight to disk.
+            </p>
+          </div>
+          <div class="max-w-md">
+            <app-code-block [code]="cmdServe" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ CTA ============================ -->
+  <section class="wrap py-24 text-center lg:py-32">
+    <h2 class="font-display mx-auto max-w-3xl text-[clamp(2rem,4.5vw,3.4rem)] font-semibold leading-[1.02] tracking-tight text-ink">
+      Translate where you can <span class="italic text-ochre">see</span> it.
+    </h2>
+    <div class="mt-9 flex flex-wrap justify-center gap-3">
+      <a
+        href="#get-started"
+        class="rounded-full bg-amber px-7 py-3.5 text-base font-semibold text-night transition hover:bg-amber-bright"
+        >Install Live i18n</a
+      >
+      <a
+        href="https://github.com/mrososs/live-i18n-tool"
+        rel="noopener"
+        target="_blank"
+        class="rounded-full border border-line bg-paper-card px-7 py-3.5 text-base font-semibold text-ink transition hover:border-ink/40"
+        >Read the source</a
+      >
+    </div>
+  </section>
+</main>
+
+<!-- ============================ FOOTER ============================ -->
+<footer class="border-t border-line bg-paper-deep/40">
+  <div
+    class="wrap flex flex-col items-start justify-between gap-6 py-10 sm:flex-row sm:items-center"
+  >
+    <app-logo [size]="28" />
+    <nav class="flex flex-wrap gap-x-7 gap-y-2 text-sm text-ink-soft" aria-label="Footer">
+      <a class="transition hover:text-ochre" href="#how">How it works</a>
+      <a class="transition hover:text-ochre" href="#features">Features</a>
+      <a class="transition hover:text-ochre" href="#get-started">Get started</a>
+      <a class="transition hover:text-ochre" href="https://github.com/mrososs/live-i18n-tool" rel="noopener" target="_blank">GitHub</a>
+      <a class="transition hover:text-ochre" href="https://www.npmjs.com/package/@live-i18n/client" rel="noopener" target="_blank">npm</a>
+      <a class="transition hover:text-ochre" href="https://www.linkedin.com/in/mohamedosos98/" rel="noopener" target="_blank">LinkedIn</a>
+    </nav>
+    <p class="font-mono text-xs text-ink-muted">
+      MIT · {{ year }} · Built by
+      <a
+        class="text-ink-soft underline-offset-2 transition hover:text-ochre hover:underline"
+        href="https://www.linkedin.com/in/mohamedosos98/"
+        rel="noopener"
+        target="_blank"
+        >Mohamed Osama</a
+      >
+    </p>
+  </div>
+</footer>
