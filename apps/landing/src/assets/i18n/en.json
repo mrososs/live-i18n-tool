@@ -1,0 +1,48 @@
+{
+  "hero": {
+    "badge": "IN-CONTEXT I18N EDITOR FOR ANGULAR",
+    "title": {
+      "lead": "Stop hunting for keys.",
+      "accent": "Edit live",
+      "trail": "where the text renders."
+    },
+    "lead": {
+      "a": "Hover any translated string in your running app, click, and rewrite it. The matching key in your",
+      "b": "is saved to disk — indentation preserved. Zero config, local-first, and completely inert in production."
+    },
+    "ctaPrimary": "Get started",
+    "ctaSecondary": "See how it works"
+  },
+  "video": {
+    "eyebrow": "Watch it work",
+    "title": "Hover, edit, save — in under a minute.",
+    "intro": "A quick tour of the live editor running against a real Angular app: arm the inspector, hover a translated string, rewrite it, and watch the matching key land on disk."
+  },
+  "how": {
+    "eyebrow": "The loop",
+    "title": "Four moves, from hover to disk.",
+    "intro": "No round-trips through your editor, no key spelunking. The client and the dev-server plugin cooperate so an edit in the browser lands in the right file."
+  },
+  "features": {
+    "eyebrow": "Why it feels effortless",
+    "title": "Built to disappear into your dev loop.",
+    "intro": "The hard parts — finding the right key, writing the right file, never breaking your build — are handled. You just edit text."
+  },
+  "architecture": {
+    "eyebrow": "Two packages, one seam",
+    "title": "A browser half and a Node half that meet at the dev server."
+  },
+  "getStarted": {
+    "eyebrow": "Get started",
+    "title": "Wired up in four steps.",
+    "intro": {
+      "a": "One install, one builder swap, one provider. Then",
+      "b": "and start editing — the steps work the same in an Nx workspace or a plain Angular CLI app."
+    }
+  },
+  "cta": {
+    "lead": "Translate where you can",
+    "accent": "see",
+    "trail": "it."
+  }
+}

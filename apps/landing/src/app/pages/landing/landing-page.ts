@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { BrowserDemo } from '../../components/browser-demo/browser-demo';
 import { CodeBlock } from '../../components/code-block/code-block';
 import { Logo } from '../../components/logo/logo';
@@ -16,13 +17,24 @@ interface Feature {
 
 @Component({
   selector: 'app-landing-page',
-  imports: [Logo, CodeBlock, BrowserDemo],
+  imports: [Logo, CodeBlock, BrowserDemo, TranslatePipe],
   templateUrl: './landing-page.html',
   styleUrl: './landing-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LandingPage {
   protected readonly year = 2026;
+
+  /** Mobile navigation drawer open state (burger menu, < md only). */
+  protected readonly menuOpen = signal(false);
+
+  protected toggleMenu(): void {
+    this.menuOpen.update((open) => !open);
+  }
+
+  protected closeMenu(): void {
+    this.menuOpen.set(false);
+  }
 
   protected readonly flow: readonly Step[] = [
     {

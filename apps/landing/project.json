@@ -18,6 +18,11 @@
           {
             "glob": "**/*",
             "input": "apps/landing/public"
+          },
+          {
+            "glob": "**/*",
+            "input": "apps/landing/src/assets",
+            "output": "assets"
           }
         ],
         "styles": ["apps/landing/src/styles.css"]
@@ -32,7 +37,7 @@
             },
             {
               "type": "anyComponentStyle",
-              "maximumWarning": "4kb",
+              "maximumWarning": "6kb",
               "maximumError": "8kb"
             }
           ],
@@ -48,7 +53,12 @@
     },
     "serve": {
       "continuous": true,
-      "executor": "@angular/build:dev-server",
+      "executor": "@live-i18n/plugin:dev-server",
+      "dependsOn": ["^build", { "projects": ["dev-plugin"], "target": "build" }],
+      "options": {
+        "translationsPath": "apps/landing/src/assets/i18n",
+        "searchRoots": ["apps/landing/src/assets/i18n"]
+      },
       "configurations": {
         "production": {
           "buildTarget": "landing:build:production"

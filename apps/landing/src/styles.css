@@ -172,8 +172,9 @@ body {
   }
   18%,
   82% {
-    outline-color: color-mix(in oklab, var(--color-amber) 85%, transparent);
-    background: color-mix(in oklab, var(--color-amber) 12%, transparent);
+    /* matches the real li18n-overlay: blue dashed box + 12% blue fill */
+    outline-color: rgba(37, 99, 235, 0.85);
+    background: rgba(37, 99, 235, 0.12);
   }
   92%,
   100% {
@@ -221,17 +222,18 @@ body {
 @keyframes demo-save {
   0%,
   66% {
-    background: var(--color-amber-bright);
-    color: var(--color-night);
+    background: #2563eb;
+    color: #ffffff;
   }
   72%,
   80% {
-    background: var(--color-teal-bright);
-    color: var(--color-night);
+    /* brief active/pressed darken — the real Save button's hover colour */
+    background: #1d4ed8;
+    color: #ffffff;
   }
   86%,
   100% {
-    background: var(--color-amber-bright);
-    color: var(--color-night);
+    background: #2563eb;
+    color: #ffffff;
   }
 }
