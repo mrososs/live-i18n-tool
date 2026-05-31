@@ -73,7 +73,11 @@ export class InspectorTrackingService {
   }
 
   private readonly onMouseMove = (event: MouseEvent): void => {
-    if (!this.state.enabled()) {
+    // Ignore hover while disabled, or while the editor is open: an open editor
+    // pins its target so the cursor can travel to the panel (passing over other
+    // translatable elements) without re-targeting. Only a click switches — see
+    // onClick.
+    if (!this.state.enabled() || this.state.isEditing()) {
       return;
     }
     // Coalesce: remember only the latest event, process once per frame.
@@ -88,7 +92,10 @@ export class InspectorTrackingService {
     this.rafId = null;
     const event = this.lastEvent;
     this.lastEvent = null;
-    if (!event || !this.state.enabled()) {
+    // Re-check isEditing: a frame may have been scheduled just before the editor
+    // opened. While editing, leave the selection untouched (clearHovered is a
+    // no-op then, so the active element stays put).
+    if (!event || !this.state.enabled() || this.state.isEditing()) {
       this.state.clearHovered();
       return;
     }
