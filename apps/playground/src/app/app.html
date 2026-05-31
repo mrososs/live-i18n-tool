@@ -1,7 +1,10 @@
 <section style="padding: 1rem; font-family: sans-serif">
-  <h1 i18nKey="demo.title">{{ 'demo.title' | translate }}</h1>
-  <p i18nKey="demo.greeting">{{ 'demo.greeting' | translate: { name: 'World' } }}</p>
-  <button type="button" i18nKey="demo.switchLanguage" (click)="toggleLanguage()">
+  <h1>{{ 'demo.title' | translate }}</h1>
+  <p>{{ 'demo.greeting' | translate: { name: 'World' } }}</p>
+  <button
+    type="button"
+    (click)="toggleLanguage()"
+  >
     {{ 'demo.switchLanguage' | translate }} ({{ lang() }})
   </button>
 </section>
