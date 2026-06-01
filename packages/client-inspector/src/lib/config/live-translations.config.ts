@@ -1,7 +1,20 @@
 import { InjectionToken } from '@angular/core';
+import { type TranslatePipeLike } from '../tracking/key-marker';
 
 /** Default dev-server route the save client posts to. Mirrors the dev-plugin. */
 export const DEFAULT_SAVE_ENDPOINT = '/__live-i18n-update';
+
+/**
+ * Describes how to extract the translation key and host element from a
+ * directive instance. Used by {@link enableKeyMarkersOnDirective} to stamp
+ * `data-i18n-key` on elements translated via attribute directives (e.g.
+ * `[transloco]="'key'"`).
+ */
+export interface DirectivePatch {
+  directive: unknown;
+  getKey: (instance: unknown) => string | undefined;
+  getElement: (instance: unknown) => HTMLElement | undefined;
+}
 
 /**
  * Host-supplied hooks for the inspector. Kept framework-agnostic: the host
@@ -16,6 +29,10 @@ export interface LiveTranslationsOptions {
   getTranslations?: () => Record<string, unknown>;
   /** Overrides the save endpoint (defaults to `/__live-i18n-update`). */
   endpoint?: string;
+  /** When provided, {@link enableKeyMarkers} is called on this pipe class at startup. */
+  patchPipe?: TranslatePipeLike;
+  /** When provided, {@link enableKeyMarkersOnDirective} is called for each entry at startup. */
+  patchDirectives?: DirectivePatch[];
 }
 
 /** Fully-resolved configuration with defaults applied. */
