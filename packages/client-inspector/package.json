@@ -1,6 +1,6 @@
 {
   "name": "@live-i18n/client",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Zero-config, in-context translation editor for Angular. Hover any translated text during ng serve, click, edit, and the matching key in your *.json files is rewritten on disk. Pairs with @live-i18n/plugin.",
   "keywords": [
     "angular",

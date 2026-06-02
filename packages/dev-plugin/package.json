@@ -1,6 +1,6 @@
 {
   "name": "@live-i18n/plugin",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Node-side Angular dev-server builder for the Live i18n Editor. Wraps @angular/build:dev-server and mounts a save API that safely rewrites translation JSON on disk (formatting preserved). Pairs with @live-i18n/client.",
   "keywords": [
     "angular",
