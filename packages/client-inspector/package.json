@@ -8,6 +8,7 @@
     "internationalization",
     "translation",
     "ngx-translate",
+    "transloco",
     "in-context-editor",
     "live-edit",
     "developer-tools",

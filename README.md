@@ -64,6 +64,16 @@ each element two ways:
 
 A `MutationObserver` re-scans as the DOM and active language change.
 
+**Works with your i18n library.** The client never depends on a specific
+translation library — it only needs a way to read the current locale and
+dictionary. Ready-made adapters ship for [`@ngx-translate/core`][ngx-translate]
+(`withNgxTranslate`) and [Transloco][transloco] (`withTransloco`, including its
+pipe **and** structural directive), and any other library is one small adapter
+away. See [Usage](#usage).
+
+[ngx-translate]: https://github.com/ngx-translate/core
+[transloco]: https://jsverse.github.io/transloco/
+
 ### Node side — `@live-i18n/plugin`
 
 A custom builder (`@live-i18n/plugin:dev-server`) wraps Angular's
@@ -150,33 +160,70 @@ Nx task-graph concepts):
 }
 ```
 
-**2. Enable the inspector in your app providers** (`app.config.ts`):
+**2. Enable the inspector in your app providers** (`app.config.ts`).
+`provideLiveTranslations` takes a single adapter for your i18n library. The
+adapter wires up the locale, the dictionary, **and** the invisible key markers
+for you — there is nothing else to call.
+
+**ngx-translate:**
 
 ```ts
-import { isDevMode } from '@angular/core';
+import { inject } from '@angular/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { enableKeyMarkers, provideLiveTranslations } from '@live-i18n/client';
-
-// Emit invisible key markers from the translate pipe (dev-only, no-op in prod).
-enableKeyMarkers(TranslatePipe, isDevMode());
+import { provideLiveTranslations, withNgxTranslate } from '@live-i18n/client';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     // ...provideTranslateService(...), etc.
-    provideLiveTranslations(() => {
-      const translate = inject(TranslateService);
-      let translations: Record<string, unknown> = {};
-      translate.onLangChange.subscribe((e) => {
-        translations = e.translations as Record<string, unknown>;
-      });
-      return {
-        getLocale: () => translate.getCurrentLang(),
-        getTranslations: () => translations,
-      };
-    }),
+    provideLiveTranslations(() =>
+      withNgxTranslate(inject(TranslateService), TranslatePipe),
+    ),
   ],
 };
 ```
+
+**Transloco:**
+
+```ts
+import { inject } from '@angular/core';
+import {
+  TranslocoService,
+  TranslocoPipe,
+  TranslocoDirective,
+} from '@jsverse/transloco';
+import { provideLiveTranslations, withTransloco } from '@live-i18n/client';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    // ...provideTransloco(...), etc.
+    provideLiveTranslations(() =>
+      // The 3rd arg is optional — pass TranslocoDirective to also tag
+      // structural `*transloco` / `[transloco]="'key'"` elements.
+      withTransloco(inject(TranslocoService), TranslocoPipe, TranslocoDirective),
+    ),
+  ],
+};
+```
+
+> **Using a different i18n library?** The client is loader-agnostic. Skip the
+> adapter and pass the options directly — supply `getLocale`, `getTranslations`,
+> and optionally `patchPipe` / `patchDirectives` so the inspector can recover the
+> exact key:
+>
+> ```ts
+> provideLiveTranslations(() => {
+>   const t = inject(MyI18nService);
+>   return {
+>     getLocale: () => t.currentLang,
+>     getTranslations: () => t.dictionaryFor(t.currentLang),
+>     patchPipe: MyTranslatePipe, // optional: enables exact-key markers
+>   };
+> });
+> ```
+>
+> An adapter (`withNgxTranslate`, `withTransloco`) is just a function that
+> returns this options object — contributing one for another library is a few
+> lines.
 
 **3. Serve as usual** — the inspector activates and the save API listens:
 
@@ -191,7 +238,7 @@ full builder options, the save-endpoint contract, and the programmatic API.
 ## Workspace layout
 
 ```
-apps/playground/            # Angular 21 demo app (ngx-translate + the inspector)
+apps/playground/            # Angular 21 demo app (Transloco + the inspector)
 apps/playground-e2e/        # Playwright e2e tests for the playground
 packages/client-inspector/  # @live-i18n/client — standalone Angular library
 packages/dev-plugin/        # @live-i18n/plugin — Node dev-server builder
@@ -217,4 +264,5 @@ npx nx affected -t test lint    # only affected projects
 
 Early development (`v0.0.1`). The two packages have working implementations and
 are exercised end-to-end by the playground app, including duplicate-text
-disambiguation and feature-split translation files. APIs may still change.
+disambiguation, feature-split translation files, and the Transloco adapter (pipe
+and structural directive). APIs may still change.

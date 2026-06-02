@@ -14,23 +14,28 @@ indentation and trailing newline preserved.
 
 ## Setup
 
-**1. Build this package** (the builder is consumed as compiled JS):
+**1. Install both packages** as dev dependencies:
 
 ```bash
-npx nx build dev-plugin
+npm install --save-dev @live-i18n/client @live-i18n/plugin
 ```
 
-**2. Point your app's `serve` target at the builder** (in `project.json`):
+**2. Point your app's `serve` target at the builder.**
+
+In an **Nx** workspace, edit the app's `project.json` (the field is `executor`):
 
 ```jsonc
 "serve": {
   "executor": "@live-i18n/plugin:dev-server",
   "continuous": true,
-  // Build the builder before serving.
-  "dependsOn": ["^build", { "projects": ["dev-plugin"], "target": "build" }],
   "options": {
     // Workspace-relative folder holding your <lang>.json files.
-    "translationsPath": "apps/playground/src/assets/i18n"
+    "translationsPath": "apps/playground/src/assets/i18n",
+    // Optional: extra roots scanned for feature-split <lang>.json files.
+    "searchRoots": [
+      "apps/playground/src/assets/i18n",
+      "apps/playground/src/app/features"
+    ]
     // "endpoint": "/__live-i18n-update"  // optional override
   },
   "configurations": {
@@ -41,16 +46,38 @@ npx nx build dev-plugin
 }
 ```
 
-`npx nx serve playground` now serves as usual and additionally listens for
-`POST /__live-i18n-update`.
+In a **plain Angular CLI** workspace, edit `angular.json` instead — the field is
+`builder` (not `executor`), and there's no `continuous`/`dependsOn`:
+
+```jsonc
+"serve": {
+  "builder": "@live-i18n/plugin:dev-server",
+  "options": {
+    "buildTarget": "my-app:build",
+    "translationsPath": "src/assets/i18n",
+    "searchRoots": ["src/assets/i18n", "src/app/features"]
+  },
+  "configurations": {
+    "development": { "buildTarget": "my-app:build:development" },
+    "production": { "buildTarget": "my-app:build:production" }
+  },
+  "defaultConfiguration": "development"
+}
+```
+
+`npx nx serve playground` (or `ng serve`) now serves as usual and additionally
+listens for `POST /__live-i18n-update`.
 
 ## How it pairs with `@live-i18n/client`
 
-The client auto-tags translated elements with `data-i18n-key` (reverse-looking
-up rendered text against the loaded dictionary — no manual directive needed) and
-posts `{ key, value, lang }` to the endpoint. This builder validates the request
-and rewrites `<translationsPath>/<lang>.json`. See `@live-i18n/client`'s
-`provideLiveTranslations(...)` for wiring the locale/dictionary getters.
+The client auto-tags translated elements with `data-i18n-key` — primarily via
+invisible key markers emitted by the translate pipe (recovering the exact key),
+with reverse-lookup against the loaded dictionary as a fallback — then posts
+`{ key, value, lang }` to the endpoint. This builder validates the request and
+rewrites the matching `<lang>.json`, routing across `searchRoots` for
+feature-split folders. See `@live-i18n/client`'s `provideLiveTranslations(...)`
+(and its `withNgxTranslate` / `withTransloco` adapters) for wiring the
+locale/dictionary on the browser side.
 
 ## Save endpoint
 

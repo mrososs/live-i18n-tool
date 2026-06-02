@@ -78,7 +78,8 @@ export class LandingPage {
     },
   ];
 
-  protected readonly cmdInstall = 'npm i -D @live-i18n/client @live-i18n/plugin';
+  protected readonly cmdInstall =
+    'npm i -D @live-i18n/client @live-i18n/plugin';
 
   protected readonly cmdServe = 'npx nx serve my-app   # or: ng serve';
 
@@ -118,27 +119,40 @@ export class LandingPage {
   "defaultConfiguration": "development"
 }`;
 
-  protected readonly codeClient = `import { isDevMode, inject } from '@angular/core';
-import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { enableKeyMarkers, provideLiveTranslations } from '@live-i18n/client';
+  /** Which i18n-library recipe is shown in step 3. */
+  protected readonly clientLib = signal<'ngx' | 'transloco'>('ngx');
 
-// Emit invisible key markers from the translate pipe (no-op in prod).
-enableKeyMarkers(TranslatePipe, isDevMode());
+  protected setClientLib(lib: 'ngx' | 'transloco'): void {
+    this.clientLib.set(lib);
+  }
+
+  protected readonly codeClientNgx = `import { inject } from '@angular/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { provideLiveTranslations, withNgxTranslate } from '@live-i18n/client';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     // ...provideTranslateService(...) etc.
-    provideLiveTranslations(() => {
-      const translate = inject(TranslateService);
-      let translations: Record<string, unknown> = {};
-      translate.onLangChange.subscribe((e) => {
-        translations = e.translations as Record<string, unknown>;
-      });
-      return {
-        getLocale: () => translate.getCurrentLang(),
-        getTranslations: () => translations,
-      };
-    }),
+    provideLiveTranslations(() =>
+      withNgxTranslate(inject(TranslateService), TranslatePipe),
+    ),
+  ],
+};`;
+
+  protected readonly codeClientTransloco = `import { inject } from '@angular/core';
+import {
+  TranslocoService,
+  TranslocoPipe,
+  TranslocoDirective,
+} from '@jsverse/transloco';
+import { provideLiveTranslations, withTransloco } from '@live-i18n/client';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    // ...provideTransloco(...) etc.
+    provideLiveTranslations(() =>
+      withTransloco(inject(TranslocoService), TranslocoPipe, TranslocoDirective),
+    ),
   ],
 };`;
 }

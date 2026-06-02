@@ -176,7 +176,9 @@
       >
         <span>Angular&nbsp;21</span>
         <span class="text-line">/</span>
-        <span>&#64;ngx-translate</span>
+        <span>ngx-translate</span>
+        <span class="text-line">/</span>
+        <span>Transloco</span>
         <span class="text-line">/</span>
         <span>esbuild dev server</span>
         <span class="text-line">/</span>
@@ -351,14 +353,15 @@
           >
         </div>
         <p class="mt-5 leading-relaxed text-ink-soft">
-          A standalone Angular library wired in with
+          A standalone Angular library wired in with a one-line
           <code class="kbd">provideLiveTranslations(...)</code>. It mounts the
           overlay, editor and toggle, auto-tags translated elements, resolves
           each key, and POSTs your edits back to the dev server.
         </p>
         <ul class="mt-6 space-y-2.5 text-sm text-ink-soft">
           <li class="flex gap-2.5">
-            <span class="text-ochre">→</span> Runtime element tagging
+            <span class="text-ochre">→</span> Adapters for ngx-translate &amp;
+            Transloco
           </li>
           <li class="flex gap-2.5">
             <span class="text-ochre">→</span> Invisible key markers +
@@ -513,12 +516,44 @@
             <span class="side-tag">Client · Browser</span>
             <h3 class="step-title">Enable the inspector</h3>
             <p class="step-desc">
-              Turn on key markers and register the live-translations provider in
-              <code class="kbd kbd--dark">app.config.ts</code>. Both are no-ops
-              in production.
+              Register the live-translations provider in
+              <code class="kbd kbd--dark">app.config.ts</code> with the adapter
+              for your i18n library. It wires up the locale, dictionary, and key
+              markers in one line — and is a no-op in production.
             </p>
           </div>
-          <app-code-block [code]="codeClient" filename="app.config.ts" />
+          <div class="min-w-0">
+            <div
+              class="mb-3 flex flex-wrap gap-2"
+              role="tablist"
+              aria-label="i18n library"
+            >
+              <button
+                type="button"
+                role="tab"
+                class="tool-tab"
+                [class.is-active]="clientLib() === 'ngx'"
+                [attr.aria-selected]="clientLib() === 'ngx'"
+                (click)="setClientLib('ngx')"
+              >
+                ngx-translate
+              </button>
+              <button
+                type="button"
+                role="tab"
+                class="tool-tab"
+                [class.is-active]="clientLib() === 'transloco'"
+                [attr.aria-selected]="clientLib() === 'transloco'"
+                (click)="setClientLib('transloco')"
+              >
+                Transloco
+              </button>
+            </div>
+            <app-code-block
+              [code]="clientLib() === 'ngx' ? codeClientNgx : codeClientTransloco"
+              filename="app.config.ts"
+            />
+          </div>
         </div>
 
         <div class="rule bg-night-line"></div>
