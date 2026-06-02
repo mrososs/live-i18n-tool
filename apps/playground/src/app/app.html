@@ -132,20 +132,20 @@
     </div>
   </section>
 
-  <section id="faq" class="faq">
-    <h2 class="section__heading">{{ 'faq.heading' | transloco }}</h2>
+  <section id="faq" class="faq" *transloco="let t">
+    <h2 class="section__heading">{{ t('faq.heading') }}</h2>
 
     <div class="faq__item">
-      <h3>{{ 'faq.q1.q' | transloco }}</h3>
-      <p>{{ 'faq.q1.a' | transloco }}</p>
+      <h3>{{ t('faq.q1.q') }}</h3>
+      <p>{{ t('faq.q1.a') }}</p>
     </div>
     <div class="faq__item">
-      <h3>{{ 'faq.q2.q' | transloco }}</h3>
-      <p>{{ 'faq.q2.a' | transloco }}</p>
+      <h3>{{ t('faq.q2.q') }}</h3>
+      <p>{{ t('faq.q2.a') }}</p>
     </div>
     <div class="faq__item">
-      <h3>{{ 'faq.q3.q' | transloco }}</h3>
-      <p>{{ 'faq.q3.a' | transloco }}</p>
+      <h3>{{ t('faq.q3.q') }}</h3>
+      <p>{{ t('faq.q3.a') }}</p>
     </div>
   </section>
 
