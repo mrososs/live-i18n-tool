@@ -13,17 +13,16 @@ interface TranslocoLike {
 }
 
 interface TranslocoDirectiveInstance {
-  transloco: string | undefined;
-  el: { nativeElement: HTMLElement } | undefined;
+  key: string | undefined;
+  host: { nativeElement: HTMLElement } | undefined;
 }
 
 function buildDirectivePatch(DirectiveClass: unknown): DirectivePatch {
   return {
     directive: DirectiveClass,
-    getKey: (instance) =>
-      (instance as TranslocoDirectiveInstance).transloco,
+    getKey: (instance) => (instance as TranslocoDirectiveInstance).key,
     getElement: (instance) =>
-      (instance as TranslocoDirectiveInstance).el?.nativeElement,
+      (instance as TranslocoDirectiveInstance).host?.nativeElement,
   };
 }
 

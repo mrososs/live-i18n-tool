@@ -1,185 +1,183 @@
 <header class="nav">
-  <a class="nav__brand" href="#">{{ 'nav.brand' | translate }}</a>
+  <a class="nav__brand" href="#">{{ 'nav.brand' | transloco }}</a>
 
   <nav class="nav__links">
-    <a href="#features">{{ 'nav.features' | translate }}</a>
-    <a href="#how">{{ 'nav.howItWorks' | translate }}</a>
-    <a href="#pricing">{{ 'nav.pricing' | translate }}</a>
-    <a href="#faq">{{ 'nav.faq' | translate }}</a>
+    <a href="#features">{{ 'nav.features' | transloco }}</a>
+    <a href="#how">{{ 'nav.howItWorks' | transloco }}</a>
+    <a href="#pricing">{{ 'nav.pricing' | transloco }}</a>
+    <a href="#faq">{{ 'nav.faq' | transloco }}</a>
   </nav>
 
   <div class="nav__actions">
     <button class="btn btn--ghost" type="button" (click)="toggleLanguage()">
       {{ otherLanguageLabel() }}
     </button>
-    <button class="btn btn--ghost" type="button">
-      {{ 'auth.login' | translate }}
-    </button>
+    <button class="btn btn--ghost" type="button" [transloco]="'auth.login'"></button>
     <button class="btn btn--primary" type="button">
-      {{ 'nav.getStarted' | translate }}
+      {{ 'nav.getStarted' | transloco }}
     </button>
   </div>
 </header>
 
 <main>
   <section class="hero">
-    <span class="hero__badge">{{ 'hero.badge' | translate }}</span>
+    <span class="hero__badge">{{ 'hero.badge' | transloco }}</span>
     <p class="hero__greeting">
-      {{ 'hero.greeting' | translate: greetingParams }}
+      {{ 'hero.greeting' | transloco: greetingParams }}
     </p>
-    <h1 class="hero__title">{{ 'hero.title' | translate }}</h1>
-    <p class="hero__subtitle">{{ 'hero.subtitle' | translate }}</p>
+    <h1 class="hero__title">{{ 'hero.title' | transloco }}</h1>
+    <p class="hero__subtitle">{{ 'hero.subtitle' | transloco }}</p>
 
     <div class="hero__cta">
       <button class="btn btn--primary btn--lg" type="button">
-        {{ 'hero.ctaPrimary' | translate }}
+        {{ 'hero.ctaPrimary' | transloco }}
       </button>
       <button class="btn btn--ghost btn--lg" type="button">
-        {{ 'hero.ctaSecondary' | translate }}
+        {{ 'hero.ctaSecondary' | transloco }}
       </button>
     </div>
 
-    <p class="hero__trust">{{ 'hero.trustNote' | translate: trustParams }}</p>
+    <p class="hero__trust">{{ 'hero.trustNote' | transloco: trustParams }}</p>
   </section>
 
   <section class="stats">
-    <div class="stat">{{ 'stats.languages' | translate: languagesParams }}</div>
-    <div class="stat">{{ 'stats.savedHours' | translate: savedHoursParams }}</div>
-    <div class="stat">{{ 'stats.keysEdited' | translate: keysEditedParams }}</div>
-    <div class="stat">{{ 'stats.uptime' | translate }}</div>
+    <div class="stat">{{ 'stats.languages' | transloco: languagesParams }}</div>
+    <div class="stat">{{ 'stats.savedHours' | transloco: savedHoursParams }}</div>
+    <div class="stat">{{ 'stats.keysEdited' | transloco: keysEditedParams }}</div>
+    <div class="stat">{{ 'stats.uptime' | transloco }}</div>
   </section>
 
   <section id="features" class="features">
-    <h2 class="section__heading">{{ 'features.heading' | translate }}</h2>
-    <p class="section__subheading">{{ 'features.subheading' | translate }}</p>
+    <h2 class="section__heading">{{ 'features.heading' | transloco }}</h2>
+    <p class="section__subheading">{{ 'features.subheading' | transloco }}</p>
 
     <div class="cards">
       <article class="card">
-        <h3>{{ 'features.inContext.title' | translate }}</h3>
-        <p>{{ 'features.inContext.body' | translate }}</p>
+        <h3>{{ 'features.inContext.title' | transloco }}</h3>
+        <p>{{ 'features.inContext.body' | transloco }}</p>
       </article>
       <article class="card">
-        <h3>{{ 'features.noRebuild.title' | translate }}</h3>
-        <p>{{ 'features.noRebuild.body' | translate }}</p>
+        <h3>{{ 'features.noRebuild.title' | transloco }}</h3>
+        <p>{{ 'features.noRebuild.body' | transloco }}</p>
       </article>
       <article class="card">
-        <h3>{{ 'features.formatSafe.title' | translate }}</h3>
-        <p>{{ 'features.formatSafe.body' | translate }}</p>
+        <h3>{{ 'features.formatSafe.title' | transloco }}</h3>
+        <p>{{ 'features.formatSafe.body' | transloco }}</p>
       </article>
       <article class="card">
-        <h3>{{ 'features.rtlReady.title' | translate }}</h3>
-        <p>{{ 'features.rtlReady.body' | translate }}</p>
+        <h3>{{ 'features.rtlReady.title' | transloco }}</h3>
+        <p>{{ 'features.rtlReady.body' | transloco }}</p>
       </article>
     </div>
   </section>
 
   <section id="how" class="how">
-    <h2 class="section__heading">{{ 'howItWorks.heading' | translate }}</h2>
+    <h2 class="section__heading">{{ 'howItWorks.heading' | transloco }}</h2>
 
     <ol class="steps">
       <li class="step">
-        <h3>{{ 'howItWorks.step1.title' | translate }}</h3>
-        <p>{{ 'howItWorks.step1.body' | translate }}</p>
+        <h3>{{ 'howItWorks.step1.title' | transloco }}</h3>
+        <p>{{ 'howItWorks.step1.body' | transloco }}</p>
       </li>
       <li class="step">
-        <h3>{{ 'howItWorks.step2.title' | translate }}</h3>
-        <p>{{ 'howItWorks.step2.body' | translate }}</p>
+        <h3>{{ 'howItWorks.step2.title' | transloco }}</h3>
+        <p>{{ 'howItWorks.step2.body' | transloco }}</p>
       </li>
       <li class="step">
-        <h3>{{ 'howItWorks.step3.title' | translate }}</h3>
-        <p>{{ 'howItWorks.step3.body' | translate }}</p>
+        <h3>{{ 'howItWorks.step3.title' | transloco }}</h3>
+        <p>{{ 'howItWorks.step3.body' | transloco }}</p>
       </li>
     </ol>
   </section>
 
   <section id="pricing" class="pricing">
-    <h2 class="section__heading">{{ 'pricing.heading' | translate }}</h2>
-    <p class="section__subheading">{{ 'pricing.subheading' | translate }}</p>
+    <h2 class="section__heading">{{ 'pricing.heading' | transloco }}</h2>
+    <p class="section__subheading">{{ 'pricing.subheading' | transloco }}</p>
 
     <div class="cards">
       <article class="tier">
-        <h3>{{ 'pricing.free.name' | translate }}</h3>
+        <h3>{{ 'pricing.free.name' | transloco }}</h3>
         <p class="tier__price">
-          {{ 'pricing.free.price' | translate }}
-          <span class="tier__period">{{ 'pricing.monthly' | translate }}</span>
+          {{ 'pricing.free.price' | transloco }}
+          <span class="tier__period">{{ 'pricing.monthly' | transloco }}</span>
         </p>
-        <p class="tier__tagline">{{ 'pricing.free.tagline' | translate }}</p>
+        <p class="tier__tagline">{{ 'pricing.free.tagline' | transloco }}</p>
         <button class="btn btn--ghost" type="button">
-          {{ 'pricing.free.cta' | translate }}
+          {{ 'pricing.free.cta' | transloco }}
         </button>
       </article>
 
       <article class="tier tier--featured">
-        <h3>{{ 'pricing.team.name' | translate }}</h3>
+        <h3>{{ 'pricing.team.name' | transloco }}</h3>
         <p class="tier__price">
-          {{ 'pricing.team.price' | translate }}
-          <span class="tier__period">{{ 'pricing.monthly' | translate }}</span>
+          {{ 'pricing.team.price' | transloco }}
+          <span class="tier__period">{{ 'pricing.monthly' | transloco }}</span>
         </p>
-        <p class="tier__tagline">{{ 'pricing.team.tagline' | translate }}</p>
+        <p class="tier__tagline">{{ 'pricing.team.tagline' | transloco }}</p>
         <button class="btn btn--primary" type="button">
-          {{ 'pricing.team.cta' | translate }}
+          {{ 'pricing.team.cta' | transloco }}
         </button>
       </article>
 
       <article class="tier">
-        <h3>{{ 'pricing.enterprise.name' | translate }}</h3>
-        <p class="tier__price">{{ 'pricing.enterprise.price' | translate }}</p>
+        <h3>{{ 'pricing.enterprise.name' | transloco }}</h3>
+        <p class="tier__price">{{ 'pricing.enterprise.price' | transloco }}</p>
         <p class="tier__tagline">
-          {{ 'pricing.enterprise.tagline' | translate }}
+          {{ 'pricing.enterprise.tagline' | transloco }}
         </p>
         <button class="btn btn--ghost" type="button">
-          {{ 'pricing.enterprise.cta' | translate }}
+          {{ 'pricing.enterprise.cta' | transloco }}
         </button>
       </article>
     </div>
   </section>
 
   <section id="faq" class="faq">
-    <h2 class="section__heading">{{ 'faq.heading' | translate }}</h2>
+    <h2 class="section__heading">{{ 'faq.heading' | transloco }}</h2>
 
     <div class="faq__item">
-      <h3>{{ 'faq.q1.q' | translate }}</h3>
-      <p>{{ 'faq.q1.a' | translate }}</p>
+      <h3>{{ 'faq.q1.q' | transloco }}</h3>
+      <p>{{ 'faq.q1.a' | transloco }}</p>
     </div>
     <div class="faq__item">
-      <h3>{{ 'faq.q2.q' | translate }}</h3>
-      <p>{{ 'faq.q2.a' | translate }}</p>
+      <h3>{{ 'faq.q2.q' | transloco }}</h3>
+      <p>{{ 'faq.q2.a' | transloco }}</p>
     </div>
     <div class="faq__item">
-      <h3>{{ 'faq.q3.q' | translate }}</h3>
-      <p>{{ 'faq.q3.a' | translate }}</p>
+      <h3>{{ 'faq.q3.q' | transloco }}</h3>
+      <p>{{ 'faq.q3.a' | transloco }}</p>
     </div>
   </section>
 
   <section class="cta">
-    <h2>{{ 'cta.title' | translate }}</h2>
-    <p>{{ 'cta.subtitle' | translate }}</p>
-    <p class="cta__account">{{ 'auth.welcome' | translate }}</p>
+    <h2>{{ 'cta.title' | transloco }}</h2>
+    <p>{{ 'cta.subtitle' | transloco }}</p>
+    <p class="cta__account">{{ 'auth.welcome' | transloco }}</p>
     <button class="btn btn--primary btn--lg" type="button">
-      {{ 'cta.button' | translate }}
+      {{ 'cta.button' | transloco }}
     </button>
   </section>
 </main>
 
 <footer class="footer">
   <div class="footer__brand">
-    <strong>{{ 'nav.brand' | translate }}</strong>
-    <p>{{ 'footer.tagline' | translate }}</p>
+    <strong [transloco]="'nav.brand'"></strong>
+    <p [transloco]="'footer.tagline'"></p>
   </div>
 
   <div class="footer__col">
-    <h4>{{ 'footer.product' | translate }}</h4>
-    <a href="#features">{{ 'nav.features' | translate }}</a>
-    <a href="#pricing">{{ 'nav.pricing' | translate }}</a>
-    <a href="#">{{ 'footer.changelog' | translate }}</a>
+    <h4 [transloco]="'footer.product'"></h4>
+    <a href="#features" [transloco]="'nav.features'"></a>
+    <a href="#pricing" [transloco]="'nav.pricing'"></a>
+    <a href="#" [transloco]="'footer.changelog'"></a>
   </div>
 
   <div class="footer__col">
-    <h4>{{ 'footer.resources' | translate }}</h4>
-    <a href="#">{{ 'footer.docs' | translate }}</a>
-    <a href="#faq">{{ 'nav.faq' | translate }}</a>
-    <a href="#">{{ 'footer.github' | translate }}</a>
+    <h4 [transloco]="'footer.resources'"></h4>
+    <a href="#" [transloco]="'footer.docs'"></a>
+    <a href="#faq" [transloco]="'nav.faq'"></a>
+    <a href="#" [transloco]="'footer.github'"></a>
   </div>
 
-  <p class="footer__rights">{{ 'footer.rights' | translate }}</p>
+  <p class="footer__rights" [transloco]="'footer.rights'"></p>
 </footer>

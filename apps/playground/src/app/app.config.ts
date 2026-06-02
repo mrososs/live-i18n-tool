@@ -6,30 +6,31 @@ import {
 import { provideHttpClient } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import {
-  TranslateLoader,
-  TranslatePipe,
-  TranslateService,
-  provideTranslateService,
-} from '@ngx-translate/core';
-import {
-  provideLiveTranslations,
-  withNgxTranslate,
-} from '@live-i18n/client';
+  provideTransloco,
+  TranslocoDirective,
+  TranslocoPipe,
+  TranslocoService,
+} from '@jsverse/transloco';
+import { provideLiveTranslations, withTransloco } from '@live-i18n/client';
 import { appRoutes } from './app.routes';
-import { MergingTranslateLoader } from './i18n/merging-translate-loader';
+import { MergingTranslocoLoader } from './i18n/merging-transloco-loader';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(appRoutes),
     provideHttpClient(),
-    provideTranslateService({
-      loader: { provide: TranslateLoader, useClass: MergingTranslateLoader },
-      fallbackLang: 'en',
-      lang: 'en',
+    provideTransloco({
+      config: {
+        availableLangs: ['en', 'ar'],
+        defaultLang: 'en',
+        fallbackLang: 'en',
+        reRenderOnLangChange: true,
+      },
+      loader: MergingTranslocoLoader,
     }),
     provideLiveTranslations(() =>
-      withNgxTranslate(inject(TranslateService), TranslatePipe),
+      withTransloco(inject(TranslocoService), TranslocoPipe, TranslocoDirective),
     ),
   ],
 };
