@@ -1,7 +1,8 @@
 import { TestBed } from '@angular/core/testing';
+import { importProvidersFrom } from '@angular/core';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideTranslateService } from '@ngx-translate/core';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { App } from './app';
 
 describe('App', () => {
@@ -11,7 +12,12 @@ describe('App', () => {
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        provideTranslateService(),
+        importProvidersFrom(
+          TranslocoTestingModule.forRoot({
+            langs: { en: {}, ar: {} },
+            translocoConfig: { defaultLang: 'en' },
+          }),
+        ),
       ],
     }).compileComponents();
   });

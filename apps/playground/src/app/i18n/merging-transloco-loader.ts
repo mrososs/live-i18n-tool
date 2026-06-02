@@ -1,13 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { TranslateLoader, type TranslationObject } from '@ngx-translate/core';
+import { type Translation, TranslocoLoader } from '@jsverse/transloco';
 import { forkJoin, map, type Observable } from 'rxjs';
 
-/**
- * Per-locale sources, deep-merged in order (later wins on leaf conflicts). This
- * mirrors an enterprise "lazy i18n" setup where each feature ships its own
- * translation file next to its code, served alongside the app-wide dictionary.
- */
 function sourcesFor(lang: string): string[] {
   return [
     `/assets/i18n/${lang}.json`,
@@ -15,27 +10,26 @@ function sourcesFor(lang: string): string[] {
   ];
 }
 
-/** Loads every source for a locale over HTTP and deep-merges them into one dict. */
-@Injectable()
-export class MergingTranslateLoader implements TranslateLoader {
+@Injectable({ providedIn: 'root' })
+export class MergingTranslocoLoader implements TranslocoLoader {
   private readonly http = inject(HttpClient);
 
-  getTranslation(lang: string): Observable<TranslationObject> {
-    const requests = sourcesFor(lang).map((url) =>
-      this.http.get<TranslationObject>(url),
-    );
-    return forkJoin(requests).pipe(
+  getTranslation(lang: string): Observable<Translation> {
+    return forkJoin(
+      sourcesFor(lang).map((url) =>
+        this.http.get<Record<string, unknown>>(url),
+      ),
+    ).pipe(
       map((dicts) =>
         dicts.reduce<Record<string, unknown>>(
-          (acc, dict) => deepMerge(acc, dict as Record<string, unknown>),
+          (acc, dict) => deepMerge(acc, dict),
           {},
-        ) as TranslationObject,
-    ),
+        ),
+      ),
     );
   }
 }
 
-/** Recursively merge plain objects; non-object leaves from `source` overwrite. */
 function deepMerge(
   target: Record<string, unknown>,
   source: Record<string, unknown>,

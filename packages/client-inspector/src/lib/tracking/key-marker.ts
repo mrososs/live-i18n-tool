@@ -104,6 +104,47 @@ export function enableKeyMarkers(
   proto.__liveI18nKeyMarkersPatched = true;
 }
 
+/**
+ * Patch a translation directive so every element it renders gets a
+ * `data-i18n-key` attribute. Unlike the pipe approach, the directive already
+ * knows its key via `@Input()`, so no invisible marker is needed — we stamp
+ * the attribute directly on the host element in `ngOnInit`/`ngOnChanges`.
+ * Idempotent per directive class.
+ */
+export function enableKeyMarkersOnDirective(
+  patch: import('../config/live-translations.config').DirectivePatch,
+  enabled = true,
+): void {
+  if (!enabled) return;
+  const proto = (patch.directive as { prototype: Record<string, unknown> })
+    .prototype;
+  if (proto['__liveI18nDirectivePatched']) return;
+
+  const stamp = (instance: unknown): void => {
+    const key = patch.getKey(instance);
+    const el = patch.getElement(instance);
+    if (key !== undefined && el) {
+      el.setAttribute('data-i18n-key', key);
+    }
+  };
+
+  const originalInit = proto['ngOnInit'] as (() => void) | undefined;
+  proto['ngOnInit'] = function (): void {
+    originalInit?.call(this);
+    stamp(this);
+  };
+
+  const originalChanges = proto['ngOnChanges'] as
+    | ((changes: unknown) => void)
+    | undefined;
+  proto['ngOnChanges'] = function (changes: unknown): void {
+    originalChanges?.call(this, changes);
+    stamp(this);
+  };
+
+  proto['__liveI18nDirectivePatched'] = true;
+}
+
 /** A decoded marker: the real translation key and the text that followed it. */
 export interface DecodedKeyMarker {
   key: string;

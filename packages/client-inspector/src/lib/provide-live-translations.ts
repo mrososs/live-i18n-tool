@@ -17,6 +17,10 @@ import {
   type LiveTranslationsOptions,
   LIVE_TRANSLATIONS_CONFIG,
 } from './config/live-translations.config';
+import {
+  enableKeyMarkers,
+  enableKeyMarkersOnDirective,
+} from './tracking/key-marker';
 import { InspectorEditor } from './components/inspector-editor/inspector-editor';
 import { InspectorOverlay } from './components/inspector-overlay/inspector-overlay';
 import { InspectorToggle } from './components/inspector-toggle/inspector-toggle';
@@ -65,6 +69,14 @@ export function provideLiveTranslations(
       useFactory: (): LiveTranslationsConfig => {
         const document = inject(DOCUMENT);
         const options = typeof input === 'function' ? input() : (input ?? {});
+        if (isDevMode()) {
+          if (options.patchPipe) {
+            enableKeyMarkers(options.patchPipe);
+          }
+          for (const patch of options.patchDirectives ?? []) {
+            enableKeyMarkersOnDirective(patch);
+          }
+        }
         return {
           getLocale:
             options.getLocale ??

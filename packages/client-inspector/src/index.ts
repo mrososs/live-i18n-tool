@@ -12,8 +12,12 @@ export { SaveClient, type SaveResult } from './lib/api/save-client.service';
 export { I18nKeyDirective } from './lib/directives/i18n-key.directive';
 export {
   enableKeyMarkers,
+  enableKeyMarkersOnDirective,
   type TranslatePipeLike,
 } from './lib/tracking/key-marker';
+export { withNgxTranslate } from './lib/adapters/ngx-translate.adapter';
+export { withTransloco } from './lib/adapters/transloco.adapter';
+export { type DirectivePatch } from './lib/config/live-translations.config';
 export { InspectorStateService } from './lib/state/inspector-state.service';
 export { InspectorTrackingService } from './lib/tracking/inspector-tracking.service';
 export { AutoTagService } from './lib/tracking/auto-tag.service';

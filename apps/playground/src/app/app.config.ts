@@ -1,49 +1,36 @@
 import {
   ApplicationConfig,
   inject,
-  isDevMode,
   provideBrowserGlobalErrorListeners,
 } from '@angular/core';
 import { provideHttpClient } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import {
-  TranslateLoader,
-  TranslatePipe,
-  TranslateService,
-  provideTranslateService,
-} from '@ngx-translate/core';
-import { enableKeyMarkers, provideLiveTranslations } from '@live-i18n/client';
+  provideTransloco,
+  TranslocoDirective,
+  TranslocoPipe,
+  TranslocoService,
+} from '@jsverse/transloco';
+import { provideLiveTranslations, withTransloco } from '@live-i18n/client';
 import { appRoutes } from './app.routes';
-import { MergingTranslateLoader } from './i18n/merging-translate-loader';
-
-// Emit invisible key markers from the translate pipe so the inspector can
-// recover the exact key per element — even when two keys render the same text
-// (dev-only; a no-op in production builds).
-enableKeyMarkers(TranslatePipe, isDevMode());
+import { MergingTranslocoLoader } from './i18n/merging-transloco-loader';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(appRoutes),
     provideHttpClient(),
-    provideTranslateService({
-      // Deep-merges the app-wide dictionary with feature dictionaries so
-      // feature-split translation files behave as one dictionary at runtime.
-      loader: { provide: TranslateLoader, useClass: MergingTranslateLoader },
-      fallbackLang: 'en',
-      lang: 'en',
+    provideTransloco({
+      config: {
+        availableLangs: ['en', 'ar'],
+        defaultLang: 'en',
+        fallbackLang: 'en',
+        reRenderOnLangChange: true,
+      },
+      loader: MergingTranslocoLoader,
     }),
-    provideLiveTranslations(() => {
-      const translate = inject(TranslateService);
-      // Cache the active dictionary; ngx-translate emits it on every change.
-      let translations: Record<string, unknown> = {};
-      translate.onLangChange.subscribe((event) => {
-        translations = event.translations as Record<string, unknown>;
-      });
-      return {
-        getLocale: () => translate.getCurrentLang(),
-        getTranslations: () => translations,
-      };
-    }),
+    provideLiveTranslations(() =>
+      withTransloco(inject(TranslocoService), TranslocoPipe, TranslocoDirective),
+    ),
   ],
 };
