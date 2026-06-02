@@ -28,7 +28,13 @@ export default [
   },
   {
     files: ['**/*.html'],
-    // Override or add rules here
-    rules: {},
+    rules: {
+      // The Transloco attribute directive ([transloco]="'key'") injects text
+      // content at runtime, so elements that use it are not actually empty.
+      '@angular-eslint/template/elements-content': [
+        'error',
+        { allowList: ['transloco'] },
+      ],
+    },
   },
 ];
