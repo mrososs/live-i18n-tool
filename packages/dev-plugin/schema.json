@@ -18,6 +18,15 @@
       "description": "Dev-server route that accepts translation save requests.",
       "default": "/__live-i18n-update"
     },
+    "allowedOrigins": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Exact additional browser origins allowed to call the save endpoint. Same-host development remains allowed."
+    },
+    "sessionNonce": {
+      "type": "string",
+      "description": "Optional edit-session nonce required in the x-live-i18n-session header."
+    },
     "searchRoots": {
       "type": "array",
       "items": { "type": "string" },

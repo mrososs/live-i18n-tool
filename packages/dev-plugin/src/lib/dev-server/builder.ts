@@ -1,7 +1,14 @@
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { createBuilder, type BuilderContext, type BuilderOutput } from '@angular-devkit/architect';
-import { executeDevServerBuilder, type DevServerBuilderOptions } from '@angular/build';
+import {
+  createBuilder,
+  type BuilderContext,
+  type BuilderOutput,
+} from '@angular-devkit/architect';
+import {
+  executeDevServerBuilder,
+  type DevServerBuilderOptions,
+} from '@angular/build';
 import {
   createSaveMiddleware,
   type ResolveFilePath,
@@ -17,6 +24,10 @@ export interface LiveI18nDevServerOptions extends DevServerBuilderOptions {
   translationsPath: string;
   /** Route that accepts translation save requests. */
   endpoint?: string;
+  /** Exact additional browser origins allowed to call the local save API. */
+  allowedOrigins?: string[];
+  /** Optional shared edit-session nonce required by the local save API. */
+  sessionNonce?: string;
   /**
    * Workspace-relative folders scanned (recursively) for `<lang>.json` files.
    * Defaults to `[translationsPath]`. Use this to pick up feature-split i18n.
@@ -56,6 +67,8 @@ export async function* executeLiveI18nDevServer(
   const {
     translationsPath,
     endpoint = DEFAULT_ENDPOINT,
+    allowedOrigins,
+    sessionNonce,
     searchRoots,
     defaultPath,
     configFile,
@@ -66,7 +79,9 @@ export async function* executeLiveI18nDevServer(
 
   const toAbs = (p: string): string => resolve(context.workspaceRoot, p);
 
-  const defaultPathAbs = toAbs(config.defaultPath ?? defaultPath ?? translationsPath);
+  const defaultPathAbs = toAbs(
+    config.defaultPath ?? defaultPath ?? translationsPath,
+  );
   const searchRootsAbs = unique(
     [
       ...(config.searchRoots ?? searchRoots ?? []),
@@ -95,6 +110,8 @@ export async function* executeLiveI18nDevServer(
     allowedRoots,
     resolveFilePath: config.resolveFilePath,
     logger: context.logger,
+    allowedOrigins,
+    sessionNonce,
   });
 
   yield* executeDevServerBuilder(devServerOptions, context, {
@@ -136,4 +153,6 @@ function unique(values: string[]): string[] {
   return [...new Set(values)];
 }
 
-export default createBuilder<LiveI18nDevServerOptions>(executeLiveI18nDevServer);
+export default createBuilder<LiveI18nDevServerOptions>(
+  executeLiveI18nDevServer,
+);

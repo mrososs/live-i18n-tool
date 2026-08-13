@@ -62,6 +62,7 @@
   },
   "dependencies": {
     "@angular-devkit/architect": "^0.2102.0",
+    "jsonc-parser": "^3.3.1",
     "tslib": "^2.3.0"
   },
   "peerDependencies": {

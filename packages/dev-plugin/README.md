@@ -81,14 +81,21 @@ locale/dictionary on the browser side.
 
 ## Save endpoint
 
-`POST <endpoint>` — body `{ key: string, value: string, lang: string }`
+`POST <endpoint>` — JSON body
+`{ key: string, value: string, lang: string, expectedValue?: string }`.
 
-| Status | Meaning |
-| ------ | --------------------------------------------------------- |
-| 200    | `{ ok: true, key, lang }` — file updated                  |
-| 400    | invalid JSON / missing fields / unsafe locale or key      |
-| 404    | `<lang>.json` not found in `translationsPath`             |
-| 500    | read / parse / write failure                              |
+The endpoint accepts same-host browser requests by default, rejects non-JSON
+and cross-origin requests, edits existing keys only, and returns `409` when the
+expected value is stale. Configure `allowedOrigins` for an exact additional
+origin and pair `sessionNonce` with the client option when a shared local edit
+session is required.
+
+| Status | Meaning                                              |
+| ------ | ---------------------------------------------------- |
+| 200    | `{ ok: true, key, lang }` — file updated             |
+| 400    | invalid JSON / missing fields / unsafe locale or key |
+| 404    | `<lang>.json` not found in `translationsPath`        |
+| 500    | read / parse / write failure                         |
 
 Guards: the locale must match `^[a-zA-Z][a-zA-Z0-9_-]*$`, the resolved path must
 stay inside `translationsPath`, and key segments `__proto__` / `prototype` /

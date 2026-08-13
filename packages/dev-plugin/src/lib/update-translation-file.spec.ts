@@ -1,4 +1,10 @@
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import {
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -16,7 +22,11 @@ describe('writeTranslationAtPath', () => {
     root = mkdtempSync(join(tmpdir(), 'live-i18n-write-'));
     enPath = join(root, 'en.json');
     // 4-space indent, trailing newline.
-    writeFileSync(enPath, '{\n    "nav": {\n        "brand": "Old"\n    }\n}\n', 'utf8');
+    writeFileSync(
+      enPath,
+      '{\n    "nav": {\n        "brand": "Old"\n    }\n}\n',
+      'utf8',
+    );
   });
 
   afterEach(() => {
@@ -24,17 +34,56 @@ describe('writeTranslationAtPath', () => {
   });
 
   it('updates a nested key, preserving indentation and trailing newline', () => {
-    writeTranslationAtPath(enPath, 'en', 'nav.brand', 'New', { allowedRoots: [root] });
+    writeTranslationAtPath(enPath, 'en', 'nav.brand', 'New', {
+      allowedRoots: [root],
+    });
 
     const written = readFileSync(enPath, 'utf8');
     expect(written).toBe('{\n    "nav": {\n        "brand": "New"\n    }\n}\n');
+  });
+
+  it('preserves BOM, CRLF, and unrelated formatting', () => {
+    writeFileSync(
+      enPath,
+      '\uFEFF{\r\n    "nav": { "brand": "Old", "other": "Same" }\r\n}\r\n',
+      'utf8',
+    );
+
+    writeTranslationAtPath(enPath, 'en', 'nav.brand', 'New', {
+      allowedRoots: [root],
+    });
+
+    expect(readFileSync(enPath, 'utf8')).toBe(
+      '\uFEFF{\r\n    "nav": { "brand": "New", "other": "Same" }\r\n}\r\n',
+    );
+  });
+
+  it('rejects a stale expected value without writing', () => {
+    expect(() =>
+      writeTranslationAtPath(enPath, 'en', 'nav.brand', 'New', {
+        allowedRoots: [root],
+        expectedValue: 'Someone else changed this',
+      }),
+    ).toThrowError(TranslationFileError);
+
+    expect(readFileSync(enPath, 'utf8')).toContain('"brand": "Old"');
+  });
+
+  it('rejects adding a missing key', () => {
+    expect(() =>
+      writeTranslationAtPath(enPath, 'en', 'nav.missing', 'New', {
+        allowedRoots: [root],
+      }),
+    ).toThrowError(TranslationFileError);
   });
 
   it('rejects a path outside the allowed roots (400)', () => {
     const outside = join(root, '..', 'escape.json');
     expect.assertions(2);
     try {
-      writeTranslationAtPath(outside, 'en', 'a.b', 'x', { allowedRoots: [root] });
+      writeTranslationAtPath(outside, 'en', 'a.b', 'x', {
+        allowedRoots: [root],
+      });
     } catch (error) {
       expect(error).toBeInstanceOf(TranslationFileError);
       expect((error as TranslationFileError).status).toBe(400);
@@ -45,7 +94,9 @@ describe('writeTranslationAtPath', () => {
     const notJson = join(root, 'en.txt');
     writeFileSync(notJson, '{}', 'utf8');
     try {
-      writeTranslationAtPath(notJson, 'en', 'a.b', 'x', { allowedRoots: [root] });
+      writeTranslationAtPath(notJson, 'en', 'a.b', 'x', {
+        allowedRoots: [root],
+      });
       expect.unreachable();
     } catch (error) {
       expect((error as TranslationFileError).status).toBe(400);
@@ -54,7 +105,9 @@ describe('writeTranslationAtPath', () => {
 
   it('rejects prototype-polluting key segments (400)', () => {
     try {
-      writeTranslationAtPath(enPath, 'en', 'a.__proto__.b', 'x', { allowedRoots: [root] });
+      writeTranslationAtPath(enPath, 'en', 'a.__proto__.b', 'x', {
+        allowedRoots: [root],
+      });
       expect.unreachable();
     } catch (error) {
       expect((error as TranslationFileError).status).toBe(400);
@@ -72,7 +125,9 @@ describe('writeTranslationAtPath', () => {
 
   it('404s when the target file does not exist', () => {
     try {
-      writeTranslationAtPath(join(root, 'fr.json'), 'fr', 'a.b', 'x', { allowedRoots: [root] });
+      writeTranslationAtPath(join(root, 'fr.json'), 'fr', 'a.b', 'x', {
+        allowedRoots: [root],
+      });
       expect.unreachable();
     } catch (error) {
       expect((error as TranslationFileError).status).toBe(404);
@@ -95,7 +150,9 @@ describe('updateTranslationFile (back-compat wrapper)', () => {
 
   it('writes <basePath>/<lang>.json as before', () => {
     updateTranslationFile(root, 'en', 'a', '2');
-    expect(readFileSync(join(root, 'en.json'), 'utf8')).toBe('{\n  "a": "2"\n}\n');
+    expect(readFileSync(join(root, 'en.json'), 'utf8')).toBe(
+      '{\n  "a": "2"\n}\n',
+    );
   });
 
   it('rejects an invalid locale (400)', () => {

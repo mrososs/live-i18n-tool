@@ -1,29 +1,54 @@
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import {
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs';
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { Readable } from 'node:stream';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { createSaveMiddleware, type SaveMiddlewareOptions } from './save-middleware.js';
+import {
+  createSaveMiddleware,
+  type SaveMiddlewareOptions,
+} from './save-middleware.js';
 import { TranslationIndexer } from './translation-indexer.js';
 
 const ENDPOINT = '/__live-i18n-update';
+const DEFAULT_HEADERS = {
+  'content-type': 'application/json',
+  origin: 'http://localhost:4200',
+  host: 'localhost:4200',
+};
 
 interface InvokeResult {
   status: number | 'next';
-  body?: { ok?: boolean; error?: string };
+  body?: { ok?: boolean; error?: string; revision?: string };
 }
 
-/** Drive the middleware with a mock request/response and resolve on completion. */
 function invoke(
   middleware: ReturnType<typeof createSaveMiddleware>,
   body: unknown,
-  { method = 'POST', url = ENDPOINT } = {},
+  options: {
+    method?: string;
+    url?: string;
+    headers?: Record<string, string>;
+  } = {},
 ): Promise<InvokeResult> {
+  const {
+    method = 'POST',
+    url = ENDPOINT,
+    headers = DEFAULT_HEADERS,
+  } = options;
   return new Promise((done) => {
-    const req = Readable.from([Buffer.from(JSON.stringify(body))]) as unknown as IncomingMessage;
+    const req = Readable.from([
+      Buffer.from(JSON.stringify(body)),
+    ]) as unknown as IncomingMessage;
     (req as { method?: string }).method = method;
     (req as { url?: string }).url = url;
+    (req as { headers: Record<string, string> }).headers = headers;
 
     let statusCode = 200;
     const res = {
@@ -66,68 +91,86 @@ describe('createSaveMiddleware', () => {
     featuresDir = join(root, 'features');
     assetsEn = join(assetsDir, 'en.json');
     authEn = join(featuresDir, 'auth', 'i18n', 'en.json');
-
     mkdirSync(assetsDir, { recursive: true });
     mkdirSync(join(featuresDir, 'auth', 'i18n'), { recursive: true });
-    writeFileSync(assetsEn, JSON.stringify({ nav: { brand: 'Brand' } }, null, 2) + '\n');
-    writeFileSync(authEn, JSON.stringify({ auth: { login: 'Log in' } }, null, 2) + '\n');
-
-    const indexer = TranslationIndexer.build({
-      workspaceRoot: root,
-      searchRoots: [assetsDir, featuresDir],
-      logger: {
-        info() {
-          /* noop */
-        },
-        warn() {
-          /* noop */
-        },
-      },
-    });
+    writeFileSync(
+      assetsEn,
+      JSON.stringify({ nav: { brand: 'Brand' } }, null, 2) + '\n',
+    );
+    writeFileSync(
+      authEn,
+      JSON.stringify({ auth: { login: 'Log in' } }, null, 2) + '\n',
+    );
 
     base = {
       endpoint: ENDPOINT,
-      indexer,
+      indexer: TranslationIndexer.build({
+        workspaceRoot: root,
+        searchRoots: [assetsDir, featuresDir],
+        logger: {
+          info() {
+            /* noop */
+          },
+          warn() {
+            /* noop */
+          },
+        },
+      }),
       defaultPath: assetsDir,
       allowedRoots: [assetsDir, featuresDir],
     };
   });
 
-  afterEach(() => {
-    rmSync(root, { recursive: true, force: true });
-  });
+  afterEach(() => rmSync(root, { recursive: true, force: true }));
 
-  it('routes an indexed key to its owning feature file', async () => {
-    const mw = createSaveMiddleware(base);
-    const result = await invoke(mw, { key: 'auth.login', value: 'Sign in', lang: 'en' });
-
-    expect(result.status).toBe(200);
-    expect((read(authEn).auth as Record<string, unknown>).login).toBe('Sign in');
-    expect((read(assetsEn).nav as Record<string, unknown>).brand).toBe('Brand'); // untouched
-  });
-
-  it('falls back to defaultPath for a new key and records it in the index', async () => {
-    const mw = createSaveMiddleware(base);
-    const result = await invoke(mw, { key: 'hero.cta', value: 'Go', lang: 'en' });
+  it('routes an indexed existing key and returns its revision', async () => {
+    const result = await invoke(createSaveMiddleware(base), {
+      key: 'auth.login',
+      value: 'Sign in',
+      lang: 'en',
+      expectedValue: 'Log in',
+    });
 
     expect(result.status).toBe(200);
-    expect((read(assetsEn).hero as Record<string, unknown>).cta).toBe('Go');
-    // Recorded → a subsequent resolve points at the default file.
-    expect(base.indexer.resolve('en', 'hero.cta')).toBe(assetsEn);
+    expect(result.body?.revision).toHaveLength(64);
+    expect((read(authEn).auth as Record<string, unknown>).login).toBe(
+      'Sign in',
+    );
   });
 
-  it('lets a custom resolver win over the index', async () => {
-    const mw = createSaveMiddleware({ ...base, resolveFilePath: () => authEn });
-    // nav.brand is indexed to assetsEn, but the resolver forces the auth file.
-    const result = await invoke(mw, { key: 'nav.brand', value: 'Forced', lang: 'en' });
+  it('rejects a new key', async () => {
+    const result = await invoke(createSaveMiddleware(base), {
+      key: 'hero.cta',
+      value: 'Go',
+      lang: 'en',
+    });
+
+    expect(result.status).toBe(404);
+    expect(result.body?.error).toContain('Adding keys is not supported');
+  });
+
+  it('lets a custom resolver route an existing key', async () => {
+    writeFileSync(
+      authEn,
+      JSON.stringify({ auth: { login: 'Log in' }, nav: { brand: 'Brand' } }),
+    );
+    const middleware = createSaveMiddleware({
+      ...base,
+      resolveFilePath: () => authEn,
+    });
+    const result = await invoke(middleware, {
+      key: 'nav.brand',
+      value: 'Forced',
+      lang: 'en',
+    });
 
     expect(result.status).toBe(200);
     expect((read(authEn).nav as Record<string, unknown>).brand).toBe('Forced');
-    expect((read(assetsEn).nav as Record<string, unknown>).brand).toBe('Brand'); // untouched
+    expect((read(assetsEn).nav as Record<string, unknown>).brand).toBe('Brand');
   });
 
   it('falls back to the index when the resolver throws', async () => {
-    const mw = createSaveMiddleware({
+    const middleware = createSaveMiddleware({
       ...base,
       resolveFilePath: () => {
         throw new Error('boom');
@@ -138,24 +181,92 @@ describe('createSaveMiddleware', () => {
         },
       },
     });
-    const result = await invoke(mw, { key: 'auth.login', value: 'Sign in', lang: 'en' });
+    const result = await invoke(middleware, {
+      key: 'auth.login',
+      value: 'Sign in',
+      lang: 'en',
+    });
 
     expect(result.status).toBe(200);
-    expect((read(authEn).auth as Record<string, unknown>).login).toBe('Sign in');
   });
 
-  it('rejects a malformed body with 400', async () => {
-    const mw = createSaveMiddleware(base);
-    const result = await invoke(mw, { key: 'auth.login', lang: 'en' }); // no value
-
+  it('rejects malformed payloads', async () => {
+    const result = await invoke(createSaveMiddleware(base), {
+      key: 'auth.login',
+      lang: 'en',
+    });
     expect(result.status).toBe(400);
-    expect(result.body?.ok).toBe(false);
   });
 
-  it('passes non-matching requests through to next()', async () => {
-    const mw = createSaveMiddleware(base);
-    const result = await invoke(mw, {}, { method: 'GET', url: '/something' });
-
+  it('passes non-matching requests through', async () => {
+    const result = await invoke(
+      createSaveMiddleware(base),
+      {},
+      {
+        method: 'GET',
+        url: '/something',
+      },
+    );
     expect(result.status).toBe('next');
+  });
+
+  it('rejects non-JSON and cross-origin requests', async () => {
+    const middleware = createSaveMiddleware(base);
+    const nonJson = await invoke(
+      middleware,
+      {},
+      {
+        headers: { ...DEFAULT_HEADERS, 'content-type': 'text/plain' },
+      },
+    );
+    const crossOrigin = await invoke(
+      middleware,
+      {},
+      {
+        headers: { ...DEFAULT_HEADERS, origin: 'https://attacker.example' },
+      },
+    );
+
+    expect(nonJson.status).toBe(415);
+    expect(crossOrigin.status).toBe(403);
+  });
+
+  it('requires a configured edit-session nonce', async () => {
+    const result = await invoke(
+      createSaveMiddleware({ ...base, sessionNonce: 'pilot-session' }),
+      { key: 'nav.brand', value: 'New', lang: 'en' },
+    );
+    expect(result.status).toBe(401);
+  });
+
+  it('accepts an exact allowlisted origin', async () => {
+    const middleware = createSaveMiddleware({
+      ...base,
+      allowedOrigins: ['https://staging.example'],
+    });
+    const result = await invoke(
+      middleware,
+      { key: 'nav.brand', value: 'New', lang: 'en' },
+      {
+        headers: {
+          'content-type': 'application/json',
+          origin: 'https://staging.example',
+          host: 'localhost:4200',
+        },
+      },
+    );
+    expect(result.status).toBe(200);
+  });
+
+  it('returns 409 without writing when the expected value is stale', async () => {
+    const result = await invoke(createSaveMiddleware(base), {
+      key: 'nav.brand',
+      value: 'New',
+      lang: 'en',
+      expectedValue: 'Stale',
+    });
+
+    expect(result.status).toBe(409);
+    expect((read(assetsEn).nav as Record<string, unknown>).brand).toBe('Brand');
   });
 });
