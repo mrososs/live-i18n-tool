@@ -1,0 +1,363 @@
+<header class="topbar">
+  <a class="brand" href="#main" aria-label="Live i18n Pilot home">
+    <span class="brand__mark" aria-hidden="true">Li</span>
+    <span>Live i18n <em>Pilot</em></span>
+  </a>
+  <div class="environment">
+    <span class="environment__dot" aria-hidden="true"></span>
+    Isaned Revamp · Test
+  </div>
+  <button class="button button--quiet" type="button" (click)="resetDemo()">
+    Reset demo
+  </button>
+</header>
+
+<main id="main">
+  <section class="intro" aria-labelledby="page-title">
+    <div>
+      <p class="eyebrow">Interactive business workflow</p>
+      <h1 id="page-title">One copy change. Three people. No repo access.</h1>
+      <p>
+        Walk through the Pilot exactly as an editor, reviewer, and developer
+        would use it before Azure DevOps automation exists.
+      </p>
+    </div>
+    <div class="status-card">
+      <span>Change Set</span>
+      <strong>CS-1042</strong>
+      <span class="status" [class]="'status status--' + status()">
+        {{ status().replace('_', ' ') }}
+      </span>
+    </div>
+  </section>
+
+  <nav class="role-switcher" aria-label="Demo roles">
+    @for (item of roles; track item.id) {
+    <button
+      type="button"
+      [class.active]="role() === item.id"
+      [attr.aria-current]="role() === item.id ? 'step' : null"
+      (click)="selectRole(item.id)"
+    >
+      <span>{{ item.eyebrow }}</span>
+      <strong>{{ item.label }}</strong>
+    </button>
+    }
+  </nav>
+
+  @if (role() === 'editor') {
+  <section class="workspace" aria-labelledby="editor-title">
+    <article class="canvas panel">
+      <div class="panel__header">
+        <div>
+          <p class="eyebrow">Protected staging app</p>
+          <h2 id="editor-title">Checkout page</h2>
+        </div>
+        <span class="secure-badge">Session origin verified</span>
+      </div>
+
+      <div class="browser-frame">
+        <div class="browser-frame__bar">
+          <span></span><span></span><span></span>
+          <div>test.isaned.internal/checkout</div>
+        </div>
+        <div class="checkout-preview">
+          <span class="preview-label">LIVE PREVIEW</span>
+          <p class="checkout-preview__hint">Ready when you are</p>
+          <h3>{{ englishValue() }}</h3>
+          <p>Review your details, then confirm your order.</p>
+          <button type="button">Continue</button>
+        </div>
+      </div>
+    </article>
+
+    <aside class="editor panel">
+      <div class="panel__header">
+        <div>
+          <p class="eyebrow">Existing key only</p>
+          <h2>checkout.title</h2>
+        </div>
+        <span class="key-badge">nested JSON</span>
+      </div>
+
+      @if (reviewNote()) {
+      <div class="review-note">
+        <strong>Reviewer note</strong>
+        <span>{{ reviewNote() }}</span>
+      </div>
+      }
+
+      <label for="english-copy">
+        <span>English · source</span>
+        <small>{{ englishValue().length }}/42</small>
+      </label>
+      <textarea
+        id="english-copy"
+        rows="3"
+        [value]="englishValue()"
+        [disabled]="status() === 'submitted' || status() === 'approved'"
+        (input)="updateEnglish($event)"
+      ></textarea>
+      <div class="suggestion">
+        <div>
+          <span class="ai-badge">AI suggestion</span>
+          <strong>{{ 'Complete your order securely' }}</strong>
+          <small>Clearer action and reassuring tone</small>
+        </div>
+        <button
+          type="button"
+          (click)="applyEnglishSuggestion()"
+          [disabled]="status() === 'submitted' || status() === 'approved'"
+        >
+          Apply
+        </button>
+      </div>
+
+      <label for="arabic-copy">
+        <span>Arabic · required locale</span>
+        <small>{{ arabicValue().length }}/42</small>
+      </label>
+      <textarea
+        id="arabic-copy"
+        rows="3"
+        dir="rtl"
+        [value]="arabicValue()"
+        [disabled]="status() === 'submitted' || status() === 'approved'"
+        (input)="updateArabic($event)"
+      ></textarea>
+      <div class="suggestion">
+        <div>
+          <span class="ai-badge">AI suggestion</span>
+          <strong dir="rtl">أكمل طلبك بأمان</strong>
+          <small>Required locale updated with the source</small>
+        </div>
+        <button
+          type="button"
+          (click)="applyArabicSuggestion()"
+          [disabled]="status() === 'submitted' || status() === 'approved'"
+        >
+          Apply
+        </button>
+      </div>
+
+      @if (requiredLocaleState() === 'outdated') {
+      <button class="reconfirm" type="button" (click)="reconfirmArabic()">
+        Keep and reconfirm existing Arabic copy
+      </button>
+      }
+
+      <div class="qa" [class.qa--blocked]="qaIssues().length > 0">
+        <div class="qa__icon" aria-hidden="true">
+          {{ qaIssues().length ? '!' : '✓' }}
+        </div>
+        <div>
+          <strong>
+            {{ qaIssues().length ? 'QA needs attention' : 'Deterministic QA
+            passed' }}
+          </strong>
+          @if (qaIssues().length) { @for (issue of qaIssues(); track issue.code
+          + issue.entryId) {
+          <span>{{ issue.message }}</span>
+          } } @else {
+          <span
+            >Length, placeholders, HTML, ICU and required locales checked.</span
+          >
+          }
+        </div>
+      </div>
+
+      <button
+        class="button button--primary button--full"
+        type="button"
+        [disabled]="!canSubmit() || status() === 'submitted' || status() === 'approved'"
+        (click)="submit()"
+      >
+        Submit for review
+      </button>
+    </aside>
+  </section>
+  } @if (role() === 'reviewer') {
+  <section class="review-layout" aria-labelledby="review-title">
+    <article class="panel review-main">
+      <div class="panel__header">
+        <div>
+          <p class="eyebrow">Independent review</p>
+          <h2 id="review-title">Review Change Set CS-1042</h2>
+        </div>
+        <span class="identity">Omar · Reviewer</span>
+      </div>
+
+      @if (status() !== 'submitted') {
+      <div class="empty-state">
+        <span>Waiting for submission</span>
+        <p>
+          Use the Content editor step to apply both AI suggestions and submit.
+        </p>
+        <button
+          class="button button--secondary"
+          type="button"
+          (click)="selectRole('editor')"
+        >
+          Open editor
+        </button>
+      </div>
+      } @else {
+      <div class="diff-table">
+        <div class="diff-table__head">
+          <span>Locale / key</span><span>Before</span><span>Proposed</span>
+        </div>
+        <div>
+          <span><strong>EN</strong> checkout.title</span>
+          <del>{{ 'Checkout' }}</del>
+          <ins>{{ englishValue() }}</ins>
+        </div>
+        <div>
+          <span><strong>AR</strong> checkout.title</span>
+          <del dir="rtl">إتمام الطلب</del>
+          <ins dir="rtl">{{ arabicValue() }}</ins>
+        </div>
+      </div>
+      <div class="review-checks">
+        <span>✓ QA passed</span>
+        <span>✓ Reviewer is not the author</span>
+        <span>✓ Base revision recorded</span>
+      </div>
+      <div class="review-actions">
+        <button
+          class="button button--danger"
+          type="button"
+          (click)="requestChanges()"
+        >
+          Request changes
+        </button>
+        <button
+          class="button button--primary"
+          type="button"
+          (click)="approve()"
+        >
+          Approve Change Set
+        </button>
+      </div>
+      }
+    </article>
+
+    <aside class="panel activity-panel">
+      <p class="eyebrow">Audit history</p>
+      <h2>Activity</h2>
+      <ol class="timeline">
+        @for (item of activity(); track $index) {
+        <li>
+          <span></span>
+          <div>
+            <strong>{{ item.actor }}</strong>
+            <p>{{ item.detail }}</p>
+            <small>{{ item.time }}</small>
+          </div>
+        </li>
+        }
+      </ol>
+    </aside>
+  </section>
+  } @if (role() === 'developer') {
+  <section class="delivery-layout" aria-labelledby="delivery-title">
+    <article class="panel delivery-main">
+      <div class="panel__header">
+        <div>
+          <p class="eyebrow">Manual Azure DevOps delivery</p>
+          <h2 id="delivery-title">Approved artifact</h2>
+        </div>
+        @if (status() === 'approved') {
+        <span class="secure-badge">Approved by Omar</span>
+        }
+      </div>
+
+      @if (status() !== 'approved') {
+      <div class="empty-state">
+        <span>Nothing approved yet</span>
+        <p>Complete the editor and reviewer steps before developer delivery.</p>
+        <button
+          class="button button--secondary"
+          type="button"
+          (click)="selectRole('editor')"
+        >
+          Start workflow
+        </button>
+      </div>
+      } @else {
+      <div class="artifact-summary">
+        <div>
+          <span>Files</span><strong>{{ changeSet().entries.length }}</strong>
+        </div>
+        <div><span>Base revision</span><strong>8f2a91c</strong></div>
+        <div><span>Repository writes</span><strong>None</strong></div>
+      </div>
+      <pre
+        aria-label="Approved change manifest preview"
+      ><code>{{ manifestJson() }}</code></pre>
+      <div class="delivery-actions">
+        <button
+          class="button button--secondary"
+          type="button"
+          (click)="copyManifest()"
+        >
+          {{ copied() ? 'Copied' : 'Copy manifest' }}
+        </button>
+        <button
+          class="button button--primary"
+          type="button"
+          (click)="downloadManifest()"
+        >
+          Download JSON artifact
+        </button>
+      </div>
+      }
+    </article>
+
+    <aside class="panel handoff">
+      <p class="eyebrow">Developer handoff</p>
+      <h2>Then use the normal repo flow</h2>
+      <ol>
+        <li>
+          <span>1</span>
+          <div>
+            <strong>Apply locally</strong
+            ><small>Validate original values before replacement.</small>
+          </div>
+        </li>
+        <li>
+          <span>2</span>
+          <div>
+            <strong>Review the diff</strong
+            ><small>Only allowlisted translation JSON files change.</small>
+          </div>
+        </li>
+        <li>
+          <span>3</span>
+          <div>
+            <strong>Commit and push</strong
+            ><small>No automatic commits from Live i18n.</small>
+          </div>
+        </li>
+        <li>
+          <span>4</span>
+          <div>
+            <strong>Azure DevOps PR</strong
+            ><small>Use the company's existing policy.</small>
+          </div>
+        </li>
+      </ol>
+      <div class="commands">
+        <code>git diff</code>
+        <code>git add src/assets/i18n/*.json</code>
+        <code>git commit -m "content: apply CS-1042"</code>
+        <code>git push</code>
+      </div>
+    </aside>
+  </section>
+  }
+</main>
+
+<footer>
+  <span>Mock Pilot · Data stays in this browser</span>
+  <span>No GitHub or Azure DevOps integration</span>
+</footer>

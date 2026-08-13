@@ -25,10 +25,10 @@ editor on itself.
 
 Two packages cooperate at dev time:
 
-| Package | Side | Role |
-| ------- | ---- | ---- |
+| Package                                           | Side    | Role                                                                                                                                       |
+| ------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
 | [`@live-i18n/client`](packages/client-inspector/) | Browser | Standalone Angular library. Auto-tags translated elements, renders the hover overlay + floating editor, and POSTs edits to the dev server. |
-| [`@live-i18n/plugin`](packages/dev-plugin/) | Node | Custom Angular dev-server builder that mounts a save-API middleware and safely rewrites translation JSON on disk. |
+| [`@live-i18n/plugin`](packages/dev-plugin/)       | Node    | Custom Angular dev-server builder that mounts a save-API middleware and safely rewrites translation JSON on disk.                          |
 
 ```
 Browser (ng serve)                          Dev server (custom builder)
@@ -56,7 +56,7 @@ onto `document.body`, then begins tagging translated elements with
 each element two ways:
 
 - **Invisible key markers** (primary) — emitted by the translate pipe so the
-  inspector recovers the *exact* key, even when two different keys render
+  inspector recovers the _exact_ key, even when two different keys render
   identical text.
 - **Reverse-lookup** (fallback) — matches rendered text back to the loaded
   dictionary, including interpolated values like `Hello, {{name}}!` via a
@@ -104,7 +104,7 @@ builders are the same underlying mechanism. It works with **any modern Angular
 project**, whether you use an Nx workspace or a plain Angular CLI app.
 
 The only real requirement is the **esbuild/Vite-based application builder**
-(`@angular/build`, the default for Angular **17+** apps). The plugin wraps that
+(`@angular/build`, for Angular **21.2+** apps). The plugin wraps that
 dev server's `executeDevServerBuilder`; it does **not** support the legacy
 Webpack builder (`@angular-devkit/build-angular:browser`/`:dev-server`).
 
@@ -199,7 +199,11 @@ export const appConfig: ApplicationConfig = {
     provideLiveTranslations(() =>
       // The 3rd arg is optional — pass TranslocoDirective to also tag
       // structural `*transloco` / `[transloco]="'key'"` elements.
-      withTransloco(inject(TranslocoService), TranslocoPipe, TranslocoDirective),
+      withTransloco(
+        inject(TranslocoService),
+        TranslocoPipe,
+        TranslocoDirective,
+      ),
     ),
   ],
 };
