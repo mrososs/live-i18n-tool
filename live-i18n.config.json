@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "projectId": "live-i18n-playground",
+  "environmentId": "staging",
+  "sourceLocale": "en",
+  "requiredLocales": ["ar"],
+  "keyMode": "nested",
+  "files": {
+    "en": [
+      "apps/playground/src/assets/i18n/en.json",
+      "apps/playground/src/app/features/auth/i18n/en.json"
+    ],
+    "ar": [
+      "apps/playground/src/assets/i18n/ar.json",
+      "apps/playground/src/app/features/auth/i18n/ar.json"
+    ]
+  },
+  "characterLimits": {
+    "hero.title": 80
+  }
+}

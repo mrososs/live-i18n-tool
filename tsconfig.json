@@ -17,6 +17,12 @@
     },
     {
       "path": "./apps/landing"
+    },
+    {
+      "path": "./packages/protocol"
+    },
+    {
+      "path": "./apps/pilot-demo"
     }
   ]
 }

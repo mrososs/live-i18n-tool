@@ -2,8 +2,10 @@
   "name": "@org/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
   "private": true,
+  "scripts": {
+    "demo:pilot": "nx serve pilot-demo --port=4400"
+  },
   "devDependencies": {
     "@angular-devkit/core": "~21.2.0",
     "@angular-devkit/schematics": "~21.2.0",

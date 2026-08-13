@@ -18,7 +18,8 @@
     "target": "es2022",
     "customConditions": ["@org/source"],
     "paths": {
-      "@live-i18n/client": ["./packages/client-inspector/src/index.ts"]
+      "@live-i18n/client": ["./packages/client-inspector/src/index.ts"],
+      "@live-i18n/protocol": ["./packages/protocol/src/index.ts"]
     }
   }
 }
