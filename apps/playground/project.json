@@ -34,6 +34,12 @@
       },
       "configurations": {
         "production": {
+          "fileReplacements": [
+            {
+              "replace": "apps/playground/src/app/live-i18n.providers.ts",
+              "with": "apps/playground/src/app/live-i18n.providers.production.ts"
+            }
+          ],
           "budgets": [
             {
               "type": "initial",
@@ -59,7 +65,10 @@
     "serve": {
       "continuous": true,
       "executor": "@live-i18n/plugin:dev-server",
-      "dependsOn": ["^build", { "projects": ["dev-plugin"], "target": "build" }],
+      "dependsOn": [
+        "^build",
+        { "projects": ["dev-plugin"], "target": "build" }
+      ],
       "options": {
         "translationsPath": "apps/playground/src/assets/i18n",
         "searchRoots": [

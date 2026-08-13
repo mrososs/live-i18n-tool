@@ -13,7 +13,7 @@ that receives edits and rewrites your translation JSON.
 
 ## Requirements
 
-- **Angular 17+** using the esbuild/Vite **application builder** (`@angular/build`,
+- **Angular 21.2+** using the esbuild/Vite **application builder** (`@angular/build`,
   the default for new apps). The legacy Webpack builder
   (`@angular-devkit/build-angular:browser`) is **not** supported.
 - An i18n library that loads translations from `*.json` files. Adapters ship for
@@ -23,8 +23,8 @@ that receives edits and rewrites your translation JSON.
 
 ## Install
 
-Install both packages as **dev dependencies** — neither reaches your production
-bundle:
+Install both packages as **dev dependencies**. In production, replace the file
+that imports the local provider so authoring code is not included in the bundle:
 
 ```bash
 npm install --save-dev @live-i18n/client @live-i18n/plugin
@@ -116,7 +116,11 @@ export const appConfig: ApplicationConfig = {
 
 ```ts
 import { ApplicationConfig, inject } from '@angular/core';
-import { TranslocoService, TranslocoPipe, TranslocoDirective } from '@jsverse/transloco';
+import {
+  TranslocoService,
+  TranslocoPipe,
+  TranslocoDirective,
+} from '@jsverse/transloco';
 import { provideLiveTranslations, withTransloco } from '@live-i18n/client';
 
 export const appConfig: ApplicationConfig = {
@@ -125,7 +129,11 @@ export const appConfig: ApplicationConfig = {
     provideLiveTranslations(() =>
       // 3rd arg is optional: pass TranslocoDirective to also tag
       // `*transloco` / `[transloco]="'key'"` elements.
-      withTransloco(inject(TranslocoService), TranslocoPipe, TranslocoDirective),
+      withTransloco(
+        inject(TranslocoService),
+        TranslocoPipe,
+        TranslocoDirective,
+      ),
     ),
   ],
 };
@@ -178,15 +186,15 @@ the dev server, where [`@live-i18n/plugin`][plugin] writes it to disk.
 
 ```ts
 import {
-  provideLiveTranslations,        // the main entry point
-  withNgxTranslate,               // adapter for @ngx-translate/core
-  withTransloco,                  // adapter for Transloco (pipe + directive)
-  LIVE_TRANSLATIONS_CONFIG,       // DI token for the resolved config
-  DEFAULT_SAVE_ENDPOINT,          // '/__live-i18n-update'
-  enableKeyMarkers,               // low-level: key markers on a translate pipe
-  enableKeyMarkersOnDirective,    // low-level: key markers on a directive
-  SaveClient,                     // posts edits to the dev server
-  AutoTagService,                 // runtime data-i18n-key tagger
+  provideLiveTranslations, // the main entry point
+  withNgxTranslate, // adapter for @ngx-translate/core
+  withTransloco, // adapter for Transloco (pipe + directive)
+  LIVE_TRANSLATIONS_CONFIG, // DI token for the resolved config
+  DEFAULT_SAVE_ENDPOINT, // '/__live-i18n-update'
+  enableKeyMarkers, // low-level: key markers on a translate pipe
+  enableKeyMarkersOnDirective, // low-level: key markers on a directive
+  SaveClient, // posts edits to the dev server
+  AutoTagService, // runtime data-i18n-key tagger
   InspectorStateService,
   InspectorTrackingService,
   I18nKeyDirective,
@@ -202,19 +210,42 @@ See [`provideLiveTranslations`][repo] for the full option list
 
 ## Troubleshooting
 
-| Symptom | Likely cause |
-| ------- | ------------ |
-| Toggle/overlay never appears | The app is a production build (`isDevMode()` is `false`), or `provideLiveTranslations(...)` isn't in your providers. |
-| Hover highlights nothing | The adapter's `getTranslations()` returns an empty dictionary — make sure a language is loaded before you hover, and that you passed the correct `TranslateService`/`TranslocoService`. |
-| Edits don't save (network error / 404) | The `serve` target isn't pointed at `@live-i18n/plugin:dev-server`, or `translationsPath` doesn't contain the `<lang>.json` you're editing. See step 1. |
-| Two identical strings resolve to the same wrong key | Key markers aren't enabled. Use an adapter (it wires `patchPipe` for you) or set `patchPipe` manually so the inspector recovers the exact key. |
-| `[transloco]` / `*transloco` elements aren't tagged | Pass `TranslocoDirective` as the 3rd argument to `withTransloco(...)`. |
+| Symptom                                             | Likely cause                                                                                                                                                                            |
+| --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Toggle/overlay never appears                        | The app is a production build (`isDevMode()` is `false`), or `provideLiveTranslations(...)` isn't in your providers.                                                                    |
+| Hover highlights nothing                            | The adapter's `getTranslations()` returns an empty dictionary — make sure a language is loaded before you hover, and that you passed the correct `TranslateService`/`TranslocoService`. |
+| Edits don't save (network error / 404)              | The `serve` target isn't pointed at `@live-i18n/plugin:dev-server`, or `translationsPath` doesn't contain the `<lang>.json` you're editing. See step 1.                                 |
+| Two identical strings resolve to the same wrong key | Key markers aren't enabled. Use an adapter (it wires `patchPipe` for you) or set `patchPipe` manually so the inspector recovers the exact key.                                          |
+| `[transloco]` / `*transloco` elements aren't tagged | Pass `TranslocoDirective` as the 3rd argument to `withTransloco(...)`.                                                                                                                  |
 
 ## Production safety
 
 This package is intended as a `devDependency`. Nothing it does has an effect in
-a production build — the overlay never mounts and no network calls are made
-outside the dev server.
+a production build — the overlay never mounts and no network calls are made.
+
+## Protected staging builds
+
+Business Pilot builds should import `provideStagingLiveTranslations` from the
+separate `@live-i18n/client/staging` entry point. Keep that import in a dedicated
+staging app configuration; the normal production configuration must not import
+the staging entry point at all. The staging provider mounts only when a
+short-lived session token is available and sends edits to the private Pilot API.
+
+```ts
+import { provideStagingLiveTranslations } from '@live-i18n/client/staging';
+
+provideStagingLiveTranslations(withTransloco(service, TranslocoPipe), {
+  apiBaseUrl: 'https://live-i18n.internal/api',
+  projectId: 'checkout',
+  environmentId: 'staging',
+  catalogSnapshotId: 'build-123',
+  getSessionToken: () => sessionStorage.getItem('live-i18n-session'),
+});
+```
+
+The open-source package supplies only the staging bridge. Authentication,
+organizations, Change Sets, QA, review, audit, AI, and approved exports belong
+to the separate private Studio/API implementation.
 
 ## License
 

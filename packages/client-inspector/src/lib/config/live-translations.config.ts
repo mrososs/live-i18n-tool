@@ -29,6 +29,8 @@ export interface LiveTranslationsOptions {
   getTranslations?: () => Record<string, unknown>;
   /** Overrides the save endpoint (defaults to `/__live-i18n-update`). */
   endpoint?: string;
+  /** Optional nonce paired with the dev-plugin `sessionNonce` option. */
+  sessionNonce?: string;
   /** When provided, {@link enableKeyMarkers} is called on this pipe class at startup. */
   patchPipe?: TranslatePipeLike;
   /** When provided, {@link enableKeyMarkersOnDirective} is called for each entry at startup. */
@@ -40,9 +42,14 @@ export interface LiveTranslationsConfig {
   getLocale: () => string;
   getTranslations: () => Record<string, unknown>;
   endpoint: string;
+  sessionNonce?: string;
+  authoringMode?: 'local' | 'staging';
+  projectId?: string;
+  environmentId?: string;
+  catalogSnapshotId?: string;
+  getSessionToken?: () => string | null;
 }
 
 /** DI token carrying the resolved {@link LiveTranslationsConfig}. */
-export const LIVE_TRANSLATIONS_CONFIG = new InjectionToken<LiveTranslationsConfig>(
-  'LIVE_TRANSLATIONS_CONFIG',
-);
+export const LIVE_TRANSLATIONS_CONFIG =
+  new InjectionToken<LiveTranslationsConfig>('LIVE_TRANSLATIONS_CONFIG');

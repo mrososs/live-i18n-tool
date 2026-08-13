@@ -14,6 +14,8 @@ import {
  */
 export type SaveErrorKind =
   | 'plugin-unavailable'
+  | 'cloud-conflict'
+  | 'cloud-error'
   | 'server-error'
   | 'network-error';
 
@@ -24,12 +26,17 @@ export interface SaveResult {
   error?: string;
   /** Present only when `ok` is `false`. */
   kind?: SaveErrorKind;
+  changeSetRevision?: number;
+  entryRevision?: number;
 }
 
 /** The JSON contract the dev-plugin save middleware always replies with. */
 interface PluginResponse {
   ok: boolean;
   error?: string;
+  revision?: string;
+  changeSetRevision?: number;
+  entryRevision?: number;
 }
 
 /**
@@ -73,6 +80,13 @@ function logSaveFailure(kind: SaveErrorKind, ctx: SaveFailureContext): void {
           `${ctx.error || 'unknown server error'} (HTTP ${ctx.status ?? '?'})`,
       );
       return;
+    case 'cloud-conflict':
+    case 'cloud-error':
+      console.error(
+        `[live-i18n] Cloud save failed for "${ctx.key}": ${ctx.error || 'request rejected'} ` +
+          `(HTTP ${ctx.status ?? '?'}). The optimistic preview was not persisted.`,
+      );
+      return;
     case 'network-error':
       console.error(
         `[live-i18n] Save failed: could not reach the dev server at "${ctx.endpoint}" ` +
@@ -92,18 +106,51 @@ function logSaveFailure(kind: SaveErrorKind, ctx: SaveFailureContext): void {
  */
 @Injectable({ providedIn: 'root' })
 export class SaveClient {
-  private readonly config = inject(LIVE_TRANSLATIONS_CONFIG, { optional: true });
+  private readonly config = inject(LIVE_TRANSLATIONS_CONFIG, {
+    optional: true,
+  });
 
-  async save(key: string, value: string): Promise<SaveResult> {
+  async save(
+    key: string,
+    value: string,
+    expectedValue?: string,
+  ): Promise<SaveResult> {
     const endpoint = this.config?.endpoint ?? DEFAULT_SAVE_ENDPOINT;
     const lang = this.config?.getLocale?.() ?? '';
 
     let response: Response;
     try {
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      if (this.config?.sessionNonce) {
+        headers['x-live-i18n-session'] = this.config.sessionNonce;
+      }
+      const sessionToken = this.config?.getSessionToken?.();
+      if (sessionToken) {
+        headers['Authorization'] = `Bearer ${sessionToken}`;
+      }
+      const payload: {
+        key: string;
+        value: string;
+        lang: string;
+        expectedValue?: string;
+        projectId?: string;
+        environmentId?: string;
+        catalogSnapshotId?: string;
+      } = { key, value, lang };
+      if (expectedValue !== undefined) {
+        payload.expectedValue = expectedValue;
+      }
+      if (this.config?.authoringMode === 'staging') {
+        payload.projectId = this.config.projectId;
+        payload.environmentId = this.config.environmentId;
+        payload.catalogSnapshotId = this.config.catalogSnapshotId;
+      }
       response = await fetch(endpoint, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ key, value, lang }),
+        headers,
+        body: JSON.stringify(payload),
       });
     } catch (error) {
       const message = (error as Error).message;
@@ -123,12 +170,28 @@ export class SaveClient {
     }
 
     if (!isPluginResponse(body)) {
-      logSaveFailure('plugin-unavailable', { key, lang, endpoint, status: response.status });
+      logSaveFailure('plugin-unavailable', {
+        key,
+        lang,
+        endpoint,
+        status: response.status,
+      });
       return { ok: false, kind: 'plugin-unavailable', status: response.status };
     }
 
     if (body.ok) {
-      return { ok: true, status: response.status };
+      return {
+        ok: true,
+        status: response.status,
+        changeSetRevision: body.changeSetRevision,
+        entryRevision: body.entryRevision,
+      };
+    }
+
+    if (this.config?.authoringMode === 'staging') {
+      const kind = response.status === 409 ? 'cloud-conflict' : 'cloud-error';
+      logSaveFailure(kind, { key, lang, endpoint, status: response.status, error: body.error });
+      return { ok: false, kind, status: response.status, error: body.error };
     }
 
     logSaveFailure('server-error', {

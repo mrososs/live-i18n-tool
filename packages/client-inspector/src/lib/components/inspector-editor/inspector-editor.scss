@@ -51,6 +51,21 @@
   }
 }
 
+.li18n-editor__field-label {
+  font-weight: 600;
+}
+
+.li18n-editor__status {
+  min-height: 18px;
+  margin: 0;
+  color: #475569;
+  font-size: 12px;
+
+  &--error {
+    color: #b42318;
+  }
+}
+
 .li18n-editor__actions {
   display: flex;
   justify-content: flex-end;
@@ -64,6 +79,11 @@
   background: #f8fafc;
   font: inherit;
   cursor: pointer;
+
+  &:disabled {
+    cursor: wait;
+    opacity: 0.65;
+  }
 
   &:hover {
     background: #f1f5f9;

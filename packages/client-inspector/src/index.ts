@@ -1,5 +1,6 @@
 export {
   provideLiveTranslations,
+  provideLiveTranslationsInternal,
   type LiveTranslationsInput,
 } from './lib/provide-live-translations';
 export {

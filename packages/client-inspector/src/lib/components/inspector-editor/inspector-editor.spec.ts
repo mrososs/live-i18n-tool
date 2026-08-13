@@ -41,6 +41,13 @@ describe('InspectorEditor', () => {
     await fixture.whenStable();
   }
 
+  async function waitFor(predicate: () => boolean): Promise<void> {
+    for (let attempts = 0; attempts < 20 && !predicate(); attempts++) {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      await fixture.whenStable();
+    }
+  }
+
   beforeEach(() => {
     // Raw value carries an interpolation placeholder the DOM never renders, so
     // tests can prove the textarea seeds from the dictionary, not the DOM text.
@@ -91,11 +98,15 @@ describe('InspectorEditor', () => {
     expect(textarea().value).toBe('Switch language (en)');
   });
 
-  it('gives the textarea an id and name for accessibility', async () => {
+  it('labels the dialog and textarea for accessibility', async () => {
     await openEditorFor('Hello, World!');
 
     expect(textarea().id).toBe('li18n-editor-input');
     expect(textarea().name).toBe('li18n-editor-input');
+    expect(panel()?.getAttribute('role')).toBe('dialog');
+    expect(
+      fixture.nativeElement.querySelector('label')?.getAttribute('for'),
+    ).toBe('li18n-editor-input');
   });
 
   it('live-previews the draft into the real element as the user types', async () => {
@@ -104,6 +115,34 @@ describe('InspectorEditor', () => {
     await type('Hola, Mundo!');
 
     expect(target.textContent).toBe('Hola, Mundo!');
+  });
+
+  it('preserves nested markup and listeners while previewing and cancelling', async () => {
+    target = document.createElement('button');
+    target.append('Hello ');
+    const strong = document.createElement('strong');
+    strong.textContent = 'World';
+    const listener = vi.fn();
+    strong.addEventListener('click', listener);
+    target.appendChild(strong);
+    document.body.appendChild(target);
+    translations = { demo: { title: 'Hello World' } };
+    state.setHoveredElement(target, 'demo.title', new DOMRect(0, 0, 100, 20));
+    state.openEditor();
+    await fixture.whenStable();
+
+    await type('Preview ');
+
+    expect(target.textContent).toBe('Preview ');
+    expect(target.querySelector('strong')).toBe(strong);
+    strong.click();
+    expect(listener).toHaveBeenCalledTimes(1);
+
+    button('Cancel').click();
+    await fixture.whenStable();
+
+    expect(target.childNodes[0]?.nodeValue).toBe('Hello ');
+    expect(target.querySelector('strong')).toBe(strong);
   });
 
   it('reverts the element text and closes when Cancel is clicked', async () => {
@@ -122,7 +161,7 @@ describe('InspectorEditor', () => {
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
       status: 200,
-      text: async () => '',
+      text: async () => '{"ok":true}',
     } as unknown as Response);
     vi.stubGlobal('fetch', fetchMock);
 
@@ -130,7 +169,7 @@ describe('InspectorEditor', () => {
     await type('Saved value');
 
     button('Save').click();
-    await fixture.whenStable();
+    await waitFor(() => !state.isEditing());
 
     expect(target.textContent).toBe('Saved value');
     expect(state.isEditing()).toBe(false);
@@ -143,14 +182,46 @@ describe('InspectorEditor', () => {
       key: 'demo.title',
       value: 'Saved value',
       lang: 'en',
+      expectedValue: 'Hello, {{name}}!',
     });
+  });
+
+  it('keeps the editor and draft open when saving fails', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: false,
+        status: 409,
+        text: async () =>
+          JSON.stringify({ ok: false, error: 'Translation changed on disk.' }),
+      } as unknown as Response),
+    );
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+
+    await openEditorFor('Hello, World!');
+    await type('Keep this draft');
+    button('Save').click();
+    await waitFor(() =>
+      fixture.nativeElement.textContent.includes(
+        'Translation changed on disk.',
+      ),
+    );
+
+    expect(state.isEditing()).toBe(true);
+    expect(textarea().value).toBe('Keep this draft');
+    expect(target.textContent).toBe('Keep this draft');
+    expect(fixture.nativeElement.textContent).toContain(
+      'Translation changed on disk.',
+    );
   });
 
   it('closes and reverts on Escape', async () => {
     await openEditorFor('Hello, World!');
     await type('Discard me');
 
-    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    document.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }),
+    );
     await fixture.whenStable();
 
     expect(target.textContent).toBe('Hello, World!');

@@ -1,0 +1,12 @@
+{
+  "name": "client-inspector-staging",
+  "private": true,
+  "nx": {
+    "includedScripts": []
+  },
+  "ngPackage": {
+    "lib": {
+      "entryFile": "src/index.ts"
+    }
+  }
+}

@@ -63,13 +63,25 @@ export type LiveTranslationsInput =
 export function provideLiveTranslations(
   input?: LiveTranslationsInput,
 ): EnvironmentProviders {
+  return provideLiveTranslationsInternal(input, false);
+}
+
+/** @internal Used by the staging-only package entry point. */
+export function provideLiveTranslationsInternal(
+  input: LiveTranslationsInput | undefined,
+  forceEnable: boolean | (() => boolean),
+  stagingConfig?: Partial<LiveTranslationsConfig>,
+  bootstrap?: () => Promise<void>,
+): EnvironmentProviders {
+  const isForceEnabled = (): boolean =>
+    typeof forceEnable === 'function' ? forceEnable() : forceEnable;
   return makeEnvironmentProviders([
     {
       provide: LIVE_TRANSLATIONS_CONFIG,
       useFactory: (): LiveTranslationsConfig => {
         const document = inject(DOCUMENT);
         const options = typeof input === 'function' ? input() : (input ?? {});
-        if (isDevMode()) {
+        if (isDevMode() || isForceEnabled()) {
           if (options.patchPipe) {
             enableKeyMarkers(options.patchPipe);
           }
@@ -79,15 +91,17 @@ export function provideLiveTranslations(
         }
         return {
           getLocale:
-            options.getLocale ??
-            (() => document.documentElement.lang || 'en'),
+            options.getLocale ?? (() => document.documentElement.lang || 'en'),
           getTranslations: options.getTranslations ?? (() => ({})),
           endpoint: options.endpoint ?? DEFAULT_SAVE_ENDPOINT,
+          sessionNonce: options.sessionNonce,
+          ...stagingConfig,
         };
       },
     },
-    provideAppInitializer(() => {
-      if (!isDevMode()) {
+    provideAppInitializer(async () => {
+      await bootstrap?.();
+      if (!isDevMode() && !isForceEnabled()) {
         return;
       }
 
@@ -97,7 +111,7 @@ export function provideLiveTranslations(
       const tracking = inject(InspectorTrackingService);
       const autoTag = inject(AutoTagService);
 
-      const mount = <T,>(component: Type<T>): ComponentRef<T> => {
+      const mount = <T>(component: Type<T>): ComponentRef<T> => {
         const ref = createComponent(component, { environmentInjector });
         appRef.attachView(ref.hostView);
         document.body.appendChild(ref.location.nativeElement as HTMLElement);

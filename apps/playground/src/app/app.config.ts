@@ -1,19 +1,13 @@
 import {
   ApplicationConfig,
-  inject,
   provideBrowserGlobalErrorListeners,
 } from '@angular/core';
 import { provideHttpClient } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
-import {
-  provideTransloco,
-  TranslocoDirective,
-  TranslocoPipe,
-  TranslocoService,
-} from '@jsverse/transloco';
-import { provideLiveTranslations, withTransloco } from '@live-i18n/client';
+import { provideTransloco } from '@jsverse/transloco';
 import { appRoutes } from './app.routes';
 import { MergingTranslocoLoader } from './i18n/merging-transloco-loader';
+import { LIVE_I18N_PROVIDERS } from './live-i18n.providers';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -29,8 +23,6 @@ export const appConfig: ApplicationConfig = {
       },
       loader: MergingTranslocoLoader,
     }),
-    provideLiveTranslations(() =>
-      withTransloco(inject(TranslocoService), TranslocoPipe, TranslocoDirective),
-    ),
+    ...LIVE_I18N_PROVIDERS,
   ],
 };
