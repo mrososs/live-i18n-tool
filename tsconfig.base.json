@@ -19,6 +19,7 @@
     "customConditions": ["@org/source"],
     "paths": {
       "@live-i18n/client": ["./packages/client-inspector/src/index.ts"],
+      "@live-i18n/client/staging": ["./packages/client-inspector/staging/src/index.ts"],
       "@live-i18n/protocol": ["./packages/protocol/src/index.ts"]
     }
   }

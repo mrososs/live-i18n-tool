@@ -58,6 +58,17 @@
           "optimization": false,
           "extractLicenses": false,
           "sourceMap": true
+        },
+        "staging": {
+          "fileReplacements": [
+            {
+              "replace": "apps/playground/src/app/live-i18n.providers.ts",
+              "with": "apps/playground/src/app/live-i18n.providers.staging.ts"
+            }
+          ],
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true
         }
       },
       "defaultConfiguration": "production"
@@ -82,6 +93,9 @@
         },
         "development": {
           "buildTarget": "playground:build:development"
+        },
+        "staging": {
+          "buildTarget": "playground:build:staging"
         }
       },
       "defaultConfiguration": "development"

@@ -100,16 +100,18 @@ export function provideLiveTranslationsInternal(
       },
     },
     provideAppInitializer(async () => {
-      await bootstrap?.();
-      if (!isDevMode() && !isForceEnabled()) {
-        return;
-      }
-
+      // Capture dependencies while Angular's initializer injection context is active.
+      // The context does not survive the asynchronous staging-code exchange below.
       const appRef = inject(ApplicationRef);
       const environmentInjector = inject(EnvironmentInjector);
       const document = inject(DOCUMENT);
       const tracking = inject(InspectorTrackingService);
       const autoTag = inject(AutoTagService);
+
+      await bootstrap?.();
+      if (!isDevMode() && !isForceEnabled()) {
+        return;
+      }
 
       const mount = <T>(component: Type<T>): ComponentRef<T> => {
         const ref = createComponent(component, { environmentInjector });

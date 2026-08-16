@@ -1,0 +1,7 @@
+{
+  "name": "client-inspector-staging",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/client-inspector/staging/src",
+  "projectType": "library",
+  "tags": []
+}
